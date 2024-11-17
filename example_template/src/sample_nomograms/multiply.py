@@ -1,6 +1,6 @@
 from pynomo.nomographer import Nomographer
 
-
+#import pdb
 
 # Define the parameters for A, B, and C
 A = {'u_min': 0, 
@@ -32,12 +32,15 @@ C = {'u_min': 0,
 block_SI = {'block_type': 'type_2',
              'f1_params': A,
              'f2_params': B, 
-             'f3_params': C}
+             'f3_params': C,
+             #'debug': True,
+}
 
 # Define the main parameters
-main_params = {'filename': 'nomo.pdf', 'paper_height':15.0,
+main_params = {'filename': 'nomo.svg', 'paper_height':15.0,
     'paper_width':15.0,'block_params': [block_SI],
     'title_str': r'\LARGE A = BxC',
+    'svg_file': True,
     }
 
 # Generate the nomogram

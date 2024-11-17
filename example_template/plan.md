@@ -24,14 +24,30 @@ Play with pynomo
 Come up with a visual prototype
 
 * **Week 4**
-Agree on System Architecture
-Begin development
+Fix pynomo bug
+Generate samples
 
 * **Week 5**
+Intercept pyx drawing
+
+
 * **Week 6**
+Intercept pyx drawing
+Intercept & draw full nomos
+
 * **Week 7**
+Design an appropriate Data Structure to store drawing info
+Save info on it
+Use info to draw
+
 * **Week 8**
+Decide on a system to update drawings in real time
+Install and setup said system.
+Play around with said system
+
 * **Week 9**
+Update SA diagram
+[...]
 * **Week 10**
 * **Week 11 [PROJECT WEEK]**
 * **Week 12 [PROJECT WEEK]** Status report submitted.
