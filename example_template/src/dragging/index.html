@@ -9,15 +9,17 @@
             margin: 0;
             padding: 0;
             height: 100vh;
-            background-color: #bdaa9874;
-            background-image: url('nomo.svg'); /* Replace 'background.svg' with your file name */
-            background-repeat: no-repeat;
-            background-size: contain; /* Adjust based on your needs */
-            background-position: center;
+            background-color: #f1eeeb74;
+        }
+
+        img {
+        user-select: none; /* Disable text/image selection */
+        pointer-events: none; /* Disable mouse interaction */
         }
     </style>
 </head>
 <body>
+    <img src = "nomo.svg" draggable="false"/>
     <script 
         type="module" src="main.js">
     </script>
