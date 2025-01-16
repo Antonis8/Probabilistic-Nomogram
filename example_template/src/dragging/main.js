@@ -49,7 +49,7 @@ export class DraggableCircle {
 
             // Update the line if it exists
             if (this.line) {
-                this.line.ConnectingLineupdateLine();
+                this.line.updateLine();
             }
         };
 
