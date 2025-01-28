@@ -21,7 +21,8 @@ export class DraggableCircle {
 
         document.body.appendChild(this.circle);
 
-        this.line = null; // Line connecting this circle to the next
+        this.next_line = null; // Line connecting this circle to the next
+        this.prev_line = null;
         this.attachEventListeners();
     }
 
@@ -48,8 +49,12 @@ export class DraggableCircle {
             }
 
             // Update the line if it exists
-            if (this.line) {
-                this.line.updateLine();
+            if (this.next_line) {
+                this.next_line.updateLine();
+            }
+
+            if (this.prev_line) {
+                this.prev_line.updateLine();
             }
         };
 
@@ -114,11 +119,28 @@ export class ConnectingLine {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    const circle1 = new DraggableCircle({ initialPosition: { top: 350, left: 100 }, bounds: { lower: 100, upper: 600 } });
-    const circle2 = new DraggableCircle({ initialPosition: { top: 350, left: 300 }, bounds: { lower: 100, upper: 600 } });
 
-    const connectingLine = new ConnectingLine({ circle1, circle2 });
+    // make dynamic
+    const circles=  [];
+    const numCircles= 5;
+    const bounds = { lower: 100, upper: 600 };
+    const top = 100
 
-    circle1.line = connectingLine;
-    circle2.line = connectingLine;
+    // circles 
+    for (let c= 0; c< numCircles; c++){
+        const newCircle = new DraggableCircle({
+            initialPosition: { top: top, left: 50 + c*150 },
+            bounds: bounds
+        });
+        circles.push(newCircle)
+    }
+    // isopleths
+    for (let i = 0; i< numCircles-1; i++ ){
+        const connectingLine = new ConnectingLine ({
+            circle1: circles[i],
+            circle2: circles[i+1]
+        })
+        circles[i].next_line = connectingLine
+        circles[i+1].prev_line = connectingLine
+    }
 });
