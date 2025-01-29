@@ -98,8 +98,8 @@ export class ConnectingLine {
         svg.style.position = "absolute";
         svg.style.top = "0";
         svg.style.left = "0";
-        svg.style.width = "100%";
-        svg.style.height = "100%";
+        svg.style.width = "500%";
+        svg.style.height = "500%";
         svg.style.pointerEvents = "none";
         document.body.appendChild(svg);
         return svg;
@@ -122,8 +122,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // make dynamic
     const circles=  [];
-    const numCircles= 5;
-    const bounds = { lower: 100, upper: 600 };
+    const numCircles= 20;
+    const bounds = { lower: 100, upper: 700 };
     const top = 100
 
     // circles 
