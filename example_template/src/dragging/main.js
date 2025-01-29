@@ -3,7 +3,7 @@
 
 
 export class DraggableCircle {
-    constructor({ initialPosition, bounds }) {
+    constructor({ slope, initialPosition, bounds }) {
         this.radius = 10;
         this.bounds = bounds;
         this.isDragging = false;
@@ -19,11 +19,21 @@ export class DraggableCircle {
         this.circle.style.left = `${initialPosition.left}px`;
         this.circle.style.cursor = "grab";
 
-        document.body.appendChild(this.circle);
-
+        
+        //initialize isopleths
         this.next_line = null; // Line connecting this circle to the next
         this.prev_line = null;
         this.attachEventListeners();
+
+        // slope
+        this.slope = slope; // The gradient m
+
+        // Compute intercept c from y = mx + c
+        // c = y- mx
+        this.intercept = initialPosition.top - this.slope * initialPosition.left;
+
+
+        document.body.appendChild(this.circle);
     }
 
     attachEventListeners() {
@@ -36,31 +46,51 @@ export class DraggableCircle {
         this.circle.style.cursor = "grabbing";
 
         const shiftY = event.clientY - this.circle.getBoundingClientRect().top;
+        const shiftX = event.clientX - this.circle.getBoundingClientRect().left;
 
-        const moveAt = (pageY) => {
-            const newTop = pageY - shiftY;
+const moveAt = (pageX, pageY) => {
 
-            if (newTop < this.bounds.lower) {
-                this.circle.style.top = `${this.bounds.lower}px`;
-            } else if (newTop > this.bounds.upper) {
-                this.circle.style.top = `${this.bounds.upper}px`;
-            } else {
-                this.circle.style.top = `${newTop}px`;
+            if (!isFinite(this.slope)){
+                const projectedY = pageY - shiftY;
+
+                if (projectedY < this.bounds.lower) {
+                    this.circle.style.top = `${this.bounds.lower}px`;
+                } else if (projectedY > this.bounds.upper) {
+                    this.circle.style.top = `${this.bounds.upper}px`;
+                } else {
+                    this.circle.style.top = `${projectedY}px`;
+                }
+            } else { //we have finite slope
+
+                // new X-coordinate
+                let projectedX = (pageX - shiftX);
+
+                // Compute the new Y based on new X
+                let projectedY = this.slope * projectedX + this.intercept;
+                
+                // stay within bounds
+                if (projectedY < this.bounds.lower) {
+                    projectedY = this.bounds.lower;
+                    projectedX = (projectedY - this.intercept) / this.slope;
+                } else if (projectedY > this.bounds.upper) {
+                    projectedY = this.bounds.upper;
+                    projectedX = (projectedY - this.intercept) / this.slope;
+                }
+
+                // Set the new position, snapping to the nearest valid point on our line
+                this.circle.style.left = `${projectedX}px`;
+                this.circle.style.top = `${projectedY}px`;
             }
-
-            // Update the line if it exists
-            if (this.next_line) {
-                this.next_line.updateLine();
-            }
-
-            if (this.prev_line) {
-                this.prev_line.updateLine();
-            }
+                
+            // Update lines if they exist
+            if (this.next_line) this.next_line.updateLine();
+            if (this.prev_line) this.prev_line.updateLine();
+            
         };
 
         const onMouseMove = (event) => {
             if (this.isDragging) {
-                moveAt(event.pageY);
+                moveAt(event.pageX, event.pageY);
             }
         };
 
@@ -122,15 +152,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // make dynamic
     const circles=  [];
-    const numCircles= 20;
-    const bounds = { lower: 100, upper: 700 };
-    const top = 100
-
+    const numCircles= 3;
+    const bounds = { lower: 40, upper: 700 };
+    const top = 300
+    const slope = Infinity
     // circles 
     for (let c= 0; c< numCircles; c++){
         const newCircle = new DraggableCircle({
             initialPosition: { top: top, left: 50 + c*150 },
-            bounds: bounds
+            bounds: bounds,
+            slope: slope
         });
         circles.push(newCircle)
     }
