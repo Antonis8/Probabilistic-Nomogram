@@ -190,6 +190,7 @@ document.addEventListener("DOMContentLoaded", function () {
             slope: Infinity
         });
         circles.push(circleA)
+
         // const diagonalTop = 80
         // const circleB = new DraggableCircle({
         //     initialPosition: { top: diagonalTop, left: 501 },
@@ -197,6 +198,7 @@ document.addEventListener("DOMContentLoaded", function () {
         //     slope: -1
         // });
         // circles.push(circleB)
+
         const circleC = new DraggableCircle({
             initialPosition: { top: 15.12, left: 570 },
             bounds: {lower: 15.12, upper: 582},
@@ -235,3 +237,43 @@ document.addEventListener("DOMContentLoaded", function () {
 }
 );
 
+class ClickableLock {
+    constructor({ position }) {
+        this.isLocked = false;
+        this.lockIcon = document.createElement("img");
+        this.lockIcon.src = "./unlocked_icon.svg"; // Initially unlocked
+        this.lockIcon.style.width = "30px";
+        this.lockIcon.style.height = "30px";
+        this.lockIcon.style.position = "absolute";
+        this.lockIcon.style.left = `${position.left}px`;
+        this.lockIcon.style.top = `${position.top}px`;
+        this.lockIcon.style.cursor = "pointer";
+        this.lockIcon.style.userSelect = "none";
+        this.lockIcon.style.pointerEvents = "auto";
+        
+        this.lockIcon.addEventListener("click", (event) => this.toggleLock(event));
+        document.body.appendChild(this.lockIcon);
+    }
+
+    toggleLock(event) {
+        event.preventDefault();
+        this.isLocked = !this.isLocked;
+        this.lockIcon.src = this.isLocked ? "./lock_icon.svg" : "./unlocked_icon.svg";
+    }
+    
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    let verticalLockIncrement = 50
+    let horizontalLockIncrement = 10
+    const lockPositions = [
+        { left: 5+ horizontalLockIncrement, top: 582 + verticalLockIncrement },
+        { left: 250 + 2*horizontalLockIncrement,  top: 330 +1.5*verticalLockIncrement },
+        { left: 570, top: 582 + 0.5*verticalLockIncrement}
+    ];
+    
+    lockPositions.forEach(position => {
+        new ClickableLock({ position });
+    });
+
+});
