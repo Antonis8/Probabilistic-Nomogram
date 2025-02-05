@@ -153,25 +153,75 @@ document.addEventListener("DOMContentLoaded", function () {
     // make dynamic
     const circles=  [];
     const numCircles= 3;
-    const bounds = { lower: 40, upper: 700 };
-    const top = 300
-    const slope = Infinity
-    // circles 
-    for (let c= 0; c< numCircles; c++){
+    const boundsY = { lower: 40, upper: 700 };
+    const initialX = 300
+    const slope = -1
+
+    makeHardCodedCircles_V2()
+    makeIsopleths()
+    
+    //issue it stops at 5?? On inkspace it should stop at 440
+    function makeHardCodedCircles_V1() {
         const newCircle = new DraggableCircle({
-            initialPosition: { top: top, left: 50 + c*150 },
-            bounds: bounds,
-            slope: slope
+            initialPosition: { top: 15.12, left: 3.44 },
+            bounds: {lower: 15.12, upper: 440},
+            slope: Infinity
+            
         });
-        circles.push(newCircle)
+
     }
-    // isopleths
-    for (let i = 0; i< numCircles-1; i++ ){
-        const connectingLine = new ConnectingLine ({
-            circle1: circles[i],
-            circle2: circles[i+1]
-        })
-        circles[i].next_line = connectingLine
-        circles[i+1].prev_line = connectingLine
+    function makeHardCodedCircles_V2() {
+        const circleA = new DraggableCircle({
+            initialPosition: { top: 15.82, left: 3.44 },
+            bounds: {lower: 15.12, upper: 582},
+            slope: Infinity
+        });
+        circles.push(circleA)
+        // const diagonalTop = 80
+        // const circleB = new DraggableCircle({
+        //     initialPosition: { top: diagonalTop, left: 501 },
+        //     bounds: {lower: diagonalTop, upper: 582},
+        //     slope: -1
+        // });
+        // circles.push(circleB)
+        const circleC = new DraggableCircle({
+            initialPosition: { top: 15.12, left: 570 },
+            bounds: {lower: 15.12, upper: 582},
+            slope: Infinity
+        });
+        circles.push(circleC)
+
+
     }
-});
+
+    function makeCircles() {
+        for (let c= 0; c< numCircles; c++){
+            const newCircle = new DraggableCircle({
+                initialPosition: { top: initialX, left: 50 + c*150 },
+                bounds: boundsY,
+                slope: slope
+            });
+            circles.push(newCircle)
+        }
+    }
+    function makeIsopleths() {
+        for (let i = 0; i< numCircles-1; i++ ){
+            const connectingLine = new ConnectingLine ({
+                circle1: circles[i],
+                circle2: circles[i+1]
+            })
+            circles[i].next_line = connectingLine
+            circles[i+1].prev_line = connectingLine
+        }
+    }
+
+    // lock: calc x midpoint b/w axes.
+    // if vertical: (M_x, y_end + c)
+    // if horizontal: (M_x, M_y +c)
+    // if diagonal: (M_x, M_y + 2c)
+    
+
+}
+
+
+);
