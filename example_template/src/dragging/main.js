@@ -158,7 +158,20 @@ document.addEventListener("DOMContentLoaded", function () {
     const slope = -1
 
     makeHardCodedCircles_V2()
-    makeIsopleths()
+    makeIsopleths();
+
+    function createSVGContainer() {
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.style.position = "absolute";
+        svg.style.top = "0";
+        svg.style.left = "0";
+        svg.style.width = "500%";
+        svg.style.height = "500%";
+        svg.style.pointerEvents = "none";
+        document.body.appendChild(svg);
+        return svg;
+    }
+    createSVGContainer()
     
     //issue it stops at 5?? On inkspace it should stop at 440
     function makeHardCodedCircles_V1() {
@@ -219,9 +232,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // if vertical: (M_x, y_end + c)
     // if horizontal: (M_x, M_y +c)
     // if diagonal: (M_x, M_y + 2c)
-    
-
 }
-
-
 );
+
