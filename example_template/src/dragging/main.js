@@ -264,16 +264,31 @@ class ClickableLock {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    let verticalLockIncrement = 50
-    let horizontalLockIncrement = 10
-    const lockPositions = [
-        { left: 5+ horizontalLockIncrement, top: 582 + verticalLockIncrement },
-        { left: 250 + 2*horizontalLockIncrement,  top: 330 +1.5*verticalLockIncrement },
-        { left: 570, top: 582 + 0.5*verticalLockIncrement}
-    ];
-    
-    lockPositions.forEach(position => {
-        new ClickableLock({ position });
-    });
+    let verticalLockIncrement = 50;
+    let horizontalLockIncrement = 10;
 
+    function makeLock(x1, y1, x2, y2) {
+        let midX = (x1 + x2) / 2;
+        let midY = (y1 + y2) / 2;
+        let lockPosition;
+        
+        if ((x1 - x2) === 0 || (y1 - y2) === 0) { // vertical/horizontal
+            lockPosition = { left: midX + "px", top: y2 + verticalLockIncrement + "px" };
+        } else {
+            lockPosition = { left: midX + horizontalLockIncrement + "px", top: midY + 2 * verticalLockIncrement + "px" };
+        }
+        
+        new ClickableLock({ position: lockPosition });
+    }
+
+    makeLock(570, 15, 570, 582);
 });
+    // const lockPositions = [
+    //     { left: 5+ horizontalLockIncrement, top: 582 + verticalLockIncrement },
+    //     { left: 250 + 2*horizontalLockIncrement,  top: 330 +1.5*verticalLockIncrement },
+    //     { left: 570, top: 582 + 0.5*verticalLockIncrement}
+    // ];
+    
+    // lockPositions.forEach(position => {
+    //     new ClickableLock({ position });
+    // });
