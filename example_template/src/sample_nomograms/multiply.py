@@ -37,7 +37,7 @@ block_SI = {'block_type': 'type_2',
 }
 
 # Define the main parameters
-main_params = {'filename': 'nomo.svg', 'paper_height':15.0,
+main_params = {'filename': 'multiply.svg', 'paper_height':15.0,
     'paper_width':15.0,'block_params': [block_SI],
     'title_str': r'\LARGE A = BxC',
     'svg_file': True,
