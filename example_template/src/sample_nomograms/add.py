@@ -82,13 +82,19 @@ def getTickCoords(VAR_LEVELS = 3, TICK_LEVELS = 2, data = readJSON()):
         start_idx= i*TICK_LEVELS
         end_idx = start_idx + TICK_LEVELS
         #print("Start" + str(start_idx) + ", End:" + str(end_idx))
-
-        sorted_axis_ticks= merge_n_sorted_lists(data[start_idx:end_idx])
+        if i==1:
+            sorted_axis_ticks= merge_n_sorted_lists(data[start_idx:end_idx])[::-1]
+        else:
+            sorted_axis_ticks= merge_n_sorted_lists(data[start_idx:end_idx])
 
         axis_name= "Axis " + str(i+1)
         Axis_ticks[axis_name] = sorted_axis_ticks
 
     pprint.pp(Axis_ticks)
+    
+    for axis in Axis_ticks:
+        print(len(Axis_ticks[axis]))
+
 
 def merge_n_sorted_lists(lists):
     """
@@ -99,5 +105,4 @@ def merge_n_sorted_lists(lists):
 
 
 if __name__ == "__main__":
-    #getTickCoords()
     main()
