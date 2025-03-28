@@ -1,12 +1,7 @@
-import pprint
 from pynomo.nomographer import Nomographer
-import heapq
-import json
-import numpy as np
 
 def main():
     TICK_LEVELS = 3
-    VAR_LEVELS = 3
 
     N_params_1 = {
         'u_min': 0.0,
@@ -55,11 +50,8 @@ def main():
         'debug': False,
         'svg_file': True,
     }
-    cleanseJSON()
+
     Nomographer(main_params)
-    getTickCoords(VAR_LEVELS, TICK_LEVELS, data = readJSON())
-
-
 
 
 if __name__ == "__main__":

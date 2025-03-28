@@ -1,9 +1,10 @@
+import heapq
+import json
 from pprint import pprint
-
-
 import xml.etree.ElementTree as ET
- 
-tree = ET.parse('fuel_nomo.svg')
+from add import main as generateNomogram
+
+tree = ET.parse('add.svg')
 root = tree.getroot()
 view_box= [-9.74501, -440.202]
 x_offset = view_box[0]
@@ -60,9 +61,66 @@ def map_axis_to_coordinates(axis_count= 3):
     for axis in range(axis_count):
         axis_name = "Axis " + str(axis+1)
         axis_to_coords[axis_name] = trim_linetos(axis)
+        print("Number of ticks for Axis " + str(axis) + ": " + str(len(trim_linetos(axis))))
 
-    pprint(axis_to_coords)
+    #pprint(axis_to_coords)
 
     return axis_to_coords
 
-map_axis_to_coordinates()
+# tick list
+def cleanseJSON(filepath = "tick_list.json"):
+    with open(filepath, 'w') as file:
+            print("Cleansing json file")
+            json.dump([], file)
+
+def readJSON(filepath = "tick_list.json"):
+    with open(filepath, 'r') as file:
+        try:
+            existing_data = json.load(file)
+            print("JSON read!")
+        except json.JSONDecodeError:
+            print("Json file likely just empty")
+    #breakpoint()
+    return existing_data
+
+def getTickCoords(VAR_LEVELS = 3, TICK_LEVELS = 2, data = readJSON()):
+
+    Axis_ticks = {}
+    for i in range(VAR_LEVELS):
+
+        start_idx= i*TICK_LEVELS
+        end_idx = start_idx + TICK_LEVELS
+        #print("Start" + str(start_idx) + ", End:" + str(end_idx))
+        if i==1:
+            sorted_axis_ticks= merge_n_sorted_lists(data[start_idx:end_idx])[::-1]
+        else:
+            sorted_axis_ticks= merge_n_sorted_lists(data[start_idx:end_idx])
+
+        axis_name= "Axis " + str(i+1)
+        Axis_ticks[axis_name] = sorted_axis_ticks
+
+    pprint.pp(Axis_ticks)
+    
+    for axis in Axis_ticks:
+        print(len(Axis_ticks[axis]))
+
+
+def merge_n_sorted_lists(lists):
+    """
+    :param lists: List of sorted lists
+    :return: A single sorted list
+    """
+    return list(heapq.merge(*lists))
+
+def map_axis_to_ticklist():
+    TICK_LEVELS = 3
+    N_AXIS = 3
+    cleanseJSON()
+    generateNomogram()
+    getTickCoords(N_AXIS, TICK_LEVELS, data = readJSON())
+    pass
+
+
+def main():     
+    map_axis_to_ticklist()
+    map_axis_to_coordinates()
