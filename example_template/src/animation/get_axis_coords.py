@@ -1,12 +1,12 @@
 import heapq
 import json
-from pprint import pprint
+from pprint import *
 import xml.etree.ElementTree as ET
 from add import main as generateNomogram
 
-tree = ET.parse('add.svg')
+tree = ET.parse('src/animation/add.svg')
 root = tree.getroot()
-view_box= [-9.74501, -440.202]
+view_box= [-6.08628, -295.841]
 x_offset = view_box[0]
 y_offset = view_box[1]
 
@@ -63,7 +63,7 @@ def map_axis_to_coordinates(axis_count= 3):
         axis_to_coords[axis_name] = trim_linetos(axis)
         print("Number of ticks for Axis " + str(axis) + ": " + str(len(trim_linetos(axis))))
 
-    #pprint(axis_to_coords)
+    pprint(axis_to_coords)
 
     return axis_to_coords
 
@@ -99,10 +99,11 @@ def getTickCoords(VAR_LEVELS = 3, TICK_LEVELS = 2, data = readJSON()):
         axis_name= "Axis " + str(i+1)
         Axis_ticks[axis_name] = sorted_axis_ticks
 
-    pprint.pp(Axis_ticks)
-    
+    pprint(Axis_ticks)
     for axis in Axis_ticks:
         print(len(Axis_ticks[axis]))
+    
+    return(Axis_ticks)
 
 
 def merge_n_sorted_lists(lists):
@@ -117,10 +118,50 @@ def map_axis_to_ticklist():
     N_AXIS = 3
     cleanseJSON()
     generateNomogram()
-    getTickCoords(N_AXIS, TICK_LEVELS, data = readJSON())
-    pass
+    return getTickCoords(N_AXIS, TICK_LEVELS, data = readJSON())
+
+
+
+def map_axis_to_coordinate_value_pairs():
+    axis_values_dict = map_axis_to_ticklist()
+    '''
+    'Axis 3': [-10.0,
+               -9.9,
+               -9.8, ...
+               ]
+            
+    '''
+    axis_coords_dict = map_axis_to_coordinates()
+    ''' 
+     'Axis 3': [
+                [293.2, 156.7],
+                [293.2, 159.6], ...
+               ]
+    '''
+
+    axis_to_coord_values= {}
+    for axis, coord_list in axis_coords_dict.items():
+
+        coords_to_values = {}
+        for i in range(len(coord_list)):
+            #convert [x,y] list into (x,y) tuple for hashing
+            coords = tuple(coord_list[i]) 
+            value = round(axis_values_dict[axis][i], 1)
+            coords_to_values[coords] = value
+
+            # print("Pairs: ")
+            # print(str(coords) +" : " + str(value))
+
+        axis_to_coord_values[axis] = coords_to_values
+    
+    pprint(axis_to_coord_values)
+    return (axis_to_coord_values)
+
 
 
 def main():     
-    map_axis_to_ticklist()
-    map_axis_to_coordinates()
+    map_axis_to_coordinate_value_pairs()
+
+
+
+main()
