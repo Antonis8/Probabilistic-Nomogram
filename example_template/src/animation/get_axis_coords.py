@@ -145,23 +145,59 @@ def map_axis_to_coordinate_value_pairs():
         coords_to_values = {}
         for i in range(len(coord_list)):
             #convert [x,y] list into (x,y) tuple for hashing
-            coords = tuple(coord_list[i]) 
+            coords = str(coord_list[i]) 
             value = round(axis_values_dict[axis][i], 1)
             coords_to_values[coords] = value
 
-            # print("Pairs: ")
-            # print(str(coords) +" : " + str(value))
 
-        axis_to_coord_values[axis] = coords_to_values
+        # x,y bounds
+        x_coords, y_coords = zip(*coord_list)
+        xMin, xMax = min(x_coords), max(x_coords)
+        yMin, yMax = min(y_coords), max(y_coords)
+
+        # value bounds
+        values = axis_values_dict[axis]
+        valueMin, valueMax = min(values), max(values)
+
+        # hacky test if logarithmic or linear
+        negligible_difference = 0.2
+        if abs((values[0] - values[3]) - (values[3] - values[6])) > negligible_difference:
+            scale = "logarithmic"
+        else:
+            scale = "linear"
+
+        # Save
+        axis_to_coord_values[axis] = {
+            "xMin": xMin,
+            "xMax": xMax,
+            "yMin": yMin,
+            "yMax": yMax,
+            "valueMin": valueMin,
+            "valueMax": valueMax,
+            "points": coords_to_values,
+            "scale": scale,
+        }
     
     pprint(axis_to_coord_values)
     return (axis_to_coord_values)
 
-
+def save_to_json():
+    axis_to_coord_values = map_axis_to_coordinate_value_pairs()
+    
+    # Convert tuple keys to strings
+    # serializable_dict = {
+    #     axis: {str(coords[0]) + str(coords[1]): str(value) for coords, value in coord_values.items()}
+    #     for axis, coord_values in axis_to_coord_values.items()
+    # }
+    
+    serializable_dict = axis_to_coord_values
+    # Write the dictionary to a JSON file
+    with open("axis_to_coord_values.json", "w") as json_file:
+        json.dump(serializable_dict, json_file)
+    print("Dictionary written to axis_to_coord_values.json")
 
 def main():     
     map_axis_to_coordinate_value_pairs()
+    save_to_json()
 
-
-
-main()
+main()    

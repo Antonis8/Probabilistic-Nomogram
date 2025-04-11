@@ -37,7 +37,6 @@ def main():
         'f1_params': N_params_1,
         'f2_params': N_params_2,
         'f3_params': N_params_3,
-        'isopleth_values': [[6, 2, 'x']],
     }
 
     main_params = {
