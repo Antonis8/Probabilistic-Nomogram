@@ -9,6 +9,7 @@ from multiply import main as generateMultiplyNomogram
 tree = ET.parse('src/animation/multiply.svg')
 root = tree.getroot()
 namespace = {'svg': 'http://www.w3.org/2000/svg'}
+MULTIPLICATION_NOMO_SCALING_FACTOR = 1.3227
 
 def trim_svg_keep_axis():
     # output:  one string of chained command paths
@@ -50,9 +51,12 @@ def trim_linetos(axis = 0):
         move_xy= path.split("L")[0].split()
         #print("PATH: " + str(move_xy))
         
-        new_x =round((float(move_xy[0]) - x_offset),decimals)
+        new_x= (float(move_xy[0]) - x_offset)
+        scaled_x =round( new_x * MULTIPLICATION_NOMO_SCALING_FACTOR ,decimals)
+
         new_y= round((float(move_xy[1]) - y_offset),decimals)
-        new_move = [new_x, new_y]
+        scaled_y = round(new_y * MULTIPLICATION_NOMO_SCALING_FACTOR, decimals)
+        new_move = [scaled_x, scaled_y]
         moves.append(new_move)
     return sortMoves(moves)
 
