@@ -3,13 +3,11 @@ import json
 from pprint import *
 import xml.etree.ElementTree as ET
 from add import main as generateNomogram
+from multiply import main as generateMultiplyNomogram
 
-tree = ET.parse('src/animation/add.svg')
+
+tree = ET.parse('src/animation/multiply.svg')
 root = tree.getroot()
-view_box= [-6.08628, -295.841]
-x_offset = view_box[0]
-y_offset = view_box[1]
-
 namespace = {'svg': 'http://www.w3.org/2000/svg'}
 
 def trim_svg_keep_axis():
@@ -26,13 +24,24 @@ def trim_svg_keep_axis():
             d = path.attrib.get('d')
             if len(d.split(" ")) > 5:
                 paths.append(d)
-    return paths
+    viewBox_attr = root.attrib.get("viewBox")
+    if viewBox_attr:
+        viewBox = [float(val) for val in viewBox_attr.split()][:2]
+    else:
+        viewBox = None
+    
+    print("ViewBox: " + str(viewBox))
+
+    return {"paths": paths, "viewBox": viewBox}
 
 def trim_linetos(axis = 0):
     # input: Axis number
     # output: Shifted MOVETO coordinate pairs (x,y) - sorted by y
 
-    paths = trim_svg_keep_axis()
+    paths = trim_svg_keep_axis()["paths"]
+    viewBox = trim_svg_keep_axis()["viewBox"]
+    x_offset = viewBox[0]
+    y_offset = viewBox[1]
     MLpairs = paths[axis].split('M')[2:]
 
     decimals = 1
@@ -117,7 +126,8 @@ def map_axis_to_ticklist():
     TICK_LEVELS = 3
     N_AXIS = 3
     cleanseJSON()
-    generateNomogram()
+    generateMultiplyNomogram()
+    #generateNomogram()
     return getTickCoords(N_AXIS, TICK_LEVELS, data = readJSON())
 
 
@@ -161,7 +171,9 @@ def map_axis_to_coordinate_value_pairs():
 
         # hacky test if logarithmic or linear
         negligible_difference = 0.2
-        if abs((values[0] - values[3]) - (values[3] - values[6])) > negligible_difference:
+        n = len(values)
+        midpoint = n // 2
+        if abs((values[0] - values[5]) - (values[5] - values[10])) > negligible_difference:
             scale = "logarithmic"
         else:
             scale = "linear"
@@ -199,5 +211,6 @@ def save_to_json():
 def main():     
     map_axis_to_coordinate_value_pairs()
     save_to_json()
+
 
 main()    
