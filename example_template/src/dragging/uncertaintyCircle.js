@@ -1,17 +1,25 @@
-export class DraggableCircle {
-    constructor({ slope, initialPosition, bounds, valueMin, valueMax, points, isLinearScale }) {
+export class UncertaintyCircle {
+    constructor({ slope, initialPosition, bounds }) {
         this.radius = 10;
         this.bounds = bounds;
         this.isDragging = false;
-        this.currentValue = null; // axis value
-        this.valueMin = valueMin;
-        this.valueMax = valueMax;
-        this.points = points;
-        this.isLinearScale = isLinearScale;
 
         // Create a circle element
-        this.circle = this.createCircleElement(initialPosition);
+        this.circle = document.createElement("div");
+        this.circle.style.width = `${this.radius}px`;
+        this.circle.style.height = `${this.radius}px`;
+        this.circle.style.borderRadius = "50%";
+        this.circle.style.backgroundColor = "black";
+        this.circle.style.position = "absolute";
+        this.circle.style.top = `${initialPosition.top}px`;
+        this.circle.style.left = `${initialPosition.left}px`;
+        this.circle.style.cursor = "grab";
 
+        // Diverging from the regular circle's code
+        this.circle.style.opacity = "0.5"; // Set initial opacity to 0.5
+        this.circle.style.visibility= visible  // Iniitally visible, if out of bounds then hide
+                
+        
         //initialize isopleths
         this.next_line = null; // Line connecting this circle to the next
         this.prev_line = null;
@@ -27,22 +35,6 @@ export class DraggableCircle {
 
         document.body.appendChild(this.circle);
     }
-
-    createCircleElement(initialPosition) {
-        const circle = document.createElement("div");
-        Object.assign(circle.style, {
-            width: `${this.radius}px`,
-            height: `${this.radius}px`,
-            borderRadius: "50%",
-            backgroundColor: "black",
-            position: "absolute",
-            top: `${initialPosition.top}px`,
-            left: `${initialPosition.left}px`,
-            cursor: "grab"
-        });
-        return circle;
-    }
-    
 
     attachEventListeners() {
         this.circle.addEventListener("mousedown", (event) => this.onMouseDown(event));
@@ -68,54 +60,19 @@ export class DraggableCircle {
         }
         return points;
     }
-    
-    function getNearestValidValue(targetValue, sortedValues) {
-        const min = sortedValues[0];
-        const max = sortedValues[sortedValues.length - 1];
-        
-        // check bounds
-        if (targetValue <= min) {
-            return min;
-        } else if (targetValue >= max) {
-            return max;
+
+    function generateNoisyPoints(mean, std){
+        const points = [];
+        for (let i = 0; i < 20; i++) {
+            // Generate a random value using the Box-Muller transform
+            const u1 = Math.random();
+            const u2 = Math.random();
+            const z = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+            const sample = mean + z * std; // Scale and shift to match the desired distribution
+            points.push(sample);
         }
-        else {
-            // Binary search.
-            let left = 0;
-            let right = sortedValues.length - 1;
-            
-            while (left <= right) {
-                const mid = Math.floor((left + right) / 2);
-                
-                if (sortedValues[mid] === targetValue) {
-                    return sortedValues[mid];
-                }
-                
-                if (sortedValues[mid] < targetValue) {
-                    left = mid + 1;
-                } else {
-                    right = mid - 1;
-                }
-            }
-            
-            // If tied, return the closest!
-            const leftDistance = Math.abs(sortedValues[left] - targetValue);
-            const rightDistance = Math.abs(sortedValues[right] - targetValue);
-            
-            if (leftDistance < rightDistance) {
-                return sortedValues[left];
-            } else {
-                return sortedValues[right];
-            }
-        }
+        return points;
     }
-
-    function getNearestValidCoordinates(targetValue, sortedValues, valueToCoordinatesMap) {
-        const nearestValue = getNearestValidValue(targetValue, sortedValues);
-        return valueToCoordinatesMap[nearestValue];
-    }
-
-
 
     const moveAt = (pageX, pageY) => {
 
@@ -173,5 +130,4 @@ export class DraggableCircle {
         document.addEventListener("mousemove", onMouseMove);
         document.addEventListener("mouseup", onMouseUp, { once: true });
     }
-    
 }

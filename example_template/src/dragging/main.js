@@ -63,6 +63,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const axisKeys = Object.keys(axisCoordsMap); // ["Axis 1", "Axis 2", "Axis 3"]
 
     for (const axisKey of axisKeys) {
+
+        
         const axisCoords = axisCoordsMap[axisKey]; // {"xMin": 6.1, "xMax": 6.1, ...}
         const SCALING_FACTOR= 1; // scaling factor for the coordinates
         const xMin = axisCoords.xMin*SCALING_FACTOR;
@@ -73,7 +75,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const valueMin = axisCoords.valueMin;
         const valueMax = axisCoords.valueMax;
         const points = axisCoords.points; // {"[6.1, 12.4]": 0.0, "[6.1, 15.3]": 0.1, ...}
-        const scale = axisCoords.scale; // "linear"
+        const isLinearScale = (axisCoords.scale == "linear"); 
         let ybounds = { lower: yMin, upper: yMax };
 
         let slope;
@@ -91,11 +93,15 @@ document.addEventListener("DOMContentLoaded", function () {
             slope = -1 * slope; // flip the slope for Axis 2
         }
 
-        if (axisKey != "Axis 2") { //skip axis 2
+        if (axisKey != "Axis 2") { //skip locked axis, for example the middle one.
         const newCircle = new DraggableCircle({
             initialPosition: { top: yMin, left:xMax },
             bounds: ybounds,
-            slope: slope
+            slope: slope,
+            valueMin: valueMin,
+            valueMax: valueMax,
+            points: points,
+            isLinearScale: isLinearScale,
         });
         circles.push(newCircle)
     }
