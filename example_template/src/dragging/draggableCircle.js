@@ -1,12 +1,14 @@
 export class DraggableCircle {
-    constructor({ slope, initialPosition, bounds, valueMin, valueMax, points, isLinearScale }) {
+    constructor({ slope, initialPosition, bounds, valueMin, valueMax, coordToValueMap, valueToCoordMap, sortedValues, isLinearScale }) {
         this.radius = 10;
         this.bounds = bounds;
         this.isDragging = false;
         this.currentValue = null; // axis value
         this.valueMin = valueMin;
         this.valueMax = valueMax;
-        this.points = points;
+        this.coordToValueMap = coordToValueMap; // {"[6.1, 12.4]": 0.0, "[6.1, 15.3]": 0.1, ...}
+        this.valueToCoordMap = valueToCoordMap; // {0.0: "[6.1, 12.4]", 0.1: "[6.1, 15.3]", ...}
+        this.sortedValues = sortedValues; // [0.0, 0.1, 0.2, ...]
         this.isLinearScale = isLinearScale;
 
         // Create a circle element
@@ -17,15 +19,78 @@ export class DraggableCircle {
         this.prev_line = null;
         this.attachEventListeners();
 
-        // slope
-        this.slope = slope; // The gradient m
-
         // Compute intercept c from y = mx + c
         // c = y- mx
+        this.slope = slope; // The gradient m
         this.intercept = initialPosition.top - this.slope * initialPosition.left;
 
 
         document.body.appendChild(this.circle);
+    }
+    generateNoisyPoints(mean, std){
+        const points = [];
+        for (let i = 0; i < 20; i++) {
+            // Generate a random value using the Box-Muller transform
+            const u1 = Math.random();
+            const u2 = Math.random();
+            const z = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+            const sample = mean + z * std; // Scale and shift to match the desired distribution
+            points.push(sample);
+        }
+        return points;
+    }
+    
+    getNearestValidValue(targetValue, sortedValues, valueMin, valueMax) {
+        // check bounds
+        if (targetValue <= valueMin) {
+            return valueMin;
+        } else if (targetValue >= valueMax) {
+            return valueMax;
+        }
+        else {
+            // Binary search.
+            let left = 0;
+            let right = sortedValues.length - 1;
+            
+            while (left <= right) {
+                const mid = Math.floor((left + right) / 2);
+                
+                if (sortedValues[mid] === targetValue) {
+                    return sortedValues[mid];
+                }
+                
+                if (sortedValues[mid] < targetValue) {
+                    left = mid + 1;
+                } else {
+                    right = mid - 1;
+                }
+            }
+            // If tied, return the closest!
+            const leftDistance = Math.abs(sortedValues[left] - targetValue);
+            const rightDistance = Math.abs(sortedValues[right] - targetValue);
+            
+            if (leftDistance < rightDistance) {
+                return sortedValues[left];
+            } else {
+                return sortedValues[right];
+            }
+        }
+    }
+
+    getNearestValidCoordinates(targetValue, sortedValues, valueToCoordMap, valueMin, valueMax) {
+        const nearestValue = this.getNearestValidValue(targetValue, sortedValues, valueMin, valueMax);
+        return valueToCoordMap[nearestValue];
+    }
+    
+    makeUncertaintyCircles( n, mean, std) {
+        const points = this.generateNoisyPoints(mean, std);
+        const uncertaintyCircles = [];
+        for (let i = 0; i < n; i++) {
+            const targetValue = points[i];
+            const nearestCoordinates = this.getNearestValidCoordinates(targetValue, this.sortedValues, this.valueToCoordMap, this.valueMin, this.valueMax);
+            uncertaintyCircles.push(nearestCoordinates);
+        }
+        console.log(uncertaintyCircles);
     }
 
     createCircleElement(initialPosition) {
@@ -56,64 +121,6 @@ export class DraggableCircle {
         const shiftY = event.clientY - this.circle.getBoundingClientRect().top;
         const shiftX = event.clientX - this.circle.getBoundingClientRect().left;
 
-    function generateNoisyPoints(mean, std){
-        const points = [];
-        for (let i = 0; i < 20; i++) {
-            // Generate a random value using the Box-Muller transform
-            const u1 = Math.random();
-            const u2 = Math.random();
-            const z = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
-            const sample = mean + z * std; // Scale and shift to match the desired distribution
-            points.push(sample);
-        }
-        return points;
-    }
-    
-    function getNearestValidValue(targetValue, sortedValues) {
-        const min = sortedValues[0];
-        const max = sortedValues[sortedValues.length - 1];
-        
-        // check bounds
-        if (targetValue <= min) {
-            return min;
-        } else if (targetValue >= max) {
-            return max;
-        }
-        else {
-            // Binary search.
-            let left = 0;
-            let right = sortedValues.length - 1;
-            
-            while (left <= right) {
-                const mid = Math.floor((left + right) / 2);
-                
-                if (sortedValues[mid] === targetValue) {
-                    return sortedValues[mid];
-                }
-                
-                if (sortedValues[mid] < targetValue) {
-                    left = mid + 1;
-                } else {
-                    right = mid - 1;
-                }
-            }
-            
-            // If tied, return the closest!
-            const leftDistance = Math.abs(sortedValues[left] - targetValue);
-            const rightDistance = Math.abs(sortedValues[right] - targetValue);
-            
-            if (leftDistance < rightDistance) {
-                return sortedValues[left];
-            } else {
-                return sortedValues[right];
-            }
-        }
-    }
-
-    function getNearestValidCoordinates(targetValue, sortedValues, valueToCoordinatesMap) {
-        const nearestValue = getNearestValidValue(targetValue, sortedValues);
-        return valueToCoordinatesMap[nearestValue];
-    }
 
 
 
@@ -173,5 +180,6 @@ export class DraggableCircle {
         document.addEventListener("mousemove", onMouseMove);
         document.addEventListener("mouseup", onMouseUp, { once: true });
     }
-    
+
+
 }

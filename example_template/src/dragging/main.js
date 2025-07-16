@@ -74,7 +74,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const valueMin = axisCoords.valueMin;
         const valueMax = axisCoords.valueMax;
-        const points = axisCoords.points; // {"[6.1, 12.4]": 0.0, "[6.1, 15.3]": 0.1, ...}
+
+        const coordToValueMap = axisCoords.points; // {"[6.1, 12.4]": 0.0, "[6.1, 15.3]": 0.1, ...}
+        const valueToCoordMap = Object.fromEntries(
+            Object.entries(coordToValueMap).map(([coord, value]) => [value, coord])
+        ); // {0.0: "[6.1, 12.4]", 0.1: "[6.1, 15.3]", ...}
+        const sortedValues = Object.values(coordToValueMap).sort((a, b) => a - b); // [0.0, 0.1, 0.2, ...]
+
+
         const isLinearScale = (axisCoords.scale == "linear"); 
         let ybounds = { lower: yMin, upper: yMax };
 
@@ -100,9 +107,12 @@ document.addEventListener("DOMContentLoaded", function () {
             slope: slope,
             valueMin: valueMin,
             valueMax: valueMax,
-            points: points,
             isLinearScale: isLinearScale,
+            coordToValueMap: coordToValueMap,
+            valueToCoordMap: valueToCoordMap,
+            sortedValues: sortedValues,
         });
+        newCircle.makeUncertaintyCircles( 5, 5, 1)
         circles.push(newCircle)
     }
     }
