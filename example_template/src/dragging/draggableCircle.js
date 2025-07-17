@@ -1,3 +1,4 @@
+import { UncertaintyCircle } from "./uncertaintyCircle.js";
 export class DraggableCircle {
     constructor({ slope, initialPosition, bounds, valueMin, valueMax, coordToValueMap, valueToCoordMap, sortedValues, isLinearScale }) {
         this.radius = 10;
@@ -27,9 +28,24 @@ export class DraggableCircle {
 
         document.body.appendChild(this.circle);
     }
-    generateNoisyPoints(mean, std){
+    
+    createCircleElement(initialPosition) {
+        const circle = document.createElement("div");
+        Object.assign(circle.style, {
+            width: `${this.radius}px`,
+            height: `${this.radius}px`,
+            borderRadius: "50%",
+            backgroundColor: "blue",
+            position: "absolute",
+            top: `${initialPosition.top}px`,
+            left: `${initialPosition.left}px`,
+            cursor: "grab"
+        });
+        return circle;
+    }
+    generateNoisyPoints(n, mean, std){
         const points = [];
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < n; i++) {
             // Generate a random value using the Box-Muller transform
             const u1 = Math.random();
             const u2 = Math.random();
@@ -82,31 +98,19 @@ export class DraggableCircle {
         return valueToCoordMap[nearestValue];
     }
     
-    makeUncertaintyCircles( n, mean, std) {
-        const points = this.generateNoisyPoints(mean, std);
+    makeUncertaintyCircles(n, mean, std) {
+        const points = this.generateNoisyPoints(n, mean, std);
         const uncertaintyCircles = [];
         for (let i = 0; i < n; i++) {
             const targetValue = points[i];
             const nearestCoordinates = this.getNearestValidCoordinates(targetValue, this.sortedValues, this.valueToCoordMap, this.valueMin, this.valueMax);
             uncertaintyCircles.push(nearestCoordinates);
         }
+
         console.log(uncertaintyCircles);
+        return uncertaintyCircles
     }
 
-    createCircleElement(initialPosition) {
-        const circle = document.createElement("div");
-        Object.assign(circle.style, {
-            width: `${this.radius}px`,
-            height: `${this.radius}px`,
-            borderRadius: "50%",
-            backgroundColor: "black",
-            position: "absolute",
-            top: `${initialPosition.top}px`,
-            left: `${initialPosition.left}px`,
-            cursor: "grab"
-        });
-        return circle;
-    }
     
 
     attachEventListeners() {
