@@ -39,7 +39,7 @@ export class UncertaintyCircle {
             position: "absolute",
             top: `${initialPosition.top}px`,
             left: `${initialPosition.left}px`,
-            opacity: "0.01",
+            opacity: "0.03",
             zIndex: "1" 
         });
         return circle;

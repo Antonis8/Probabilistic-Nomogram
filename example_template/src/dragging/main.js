@@ -83,25 +83,6 @@ document.addEventListener("DOMContentLoaded", function () {
             valueToCoordMap: valueToCoordMap,
             sortedValues: sortedValues,
         });
-        let uncertaintyCircleCoords =
-        newCircle.makeUncertaintyCircles( numberConfusionCircles, mean, std)
-
-        for (const coordString of uncertaintyCircleCoords) {
-            const coord = JSON.parse(coordString);
-            const x = coord[0];
-            const y = coord[1];
-            const uncertaintyCircle = new UncertaintyCircle({
-                initialPosition: { top: y, left: x },
-                bounds: ybounds,
-                slope: slope,
-                valueMin: valueMin,
-                valueMax: valueMax,
-                isLinearScale: isLinearScale,
-                coordToValueMap: coordToValueMap,
-                valueToCoordMap: valueToCoordMap,
-                sortedValues: sortedValues
-            });
-        }
 
         circles.push(newCircle)
     }
