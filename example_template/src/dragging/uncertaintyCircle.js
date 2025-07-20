@@ -1,6 +1,6 @@
 export class UncertaintyCircle {
     constructor({ slope, initialPosition, bounds, valueMin, valueMax, coordToValueMap, valueToCoordMap, sortedValues, isLinearScale }) {
-        this.radius = 10;
+        this.radius = 7;
         this.bounds = bounds;
         // this.isDragging = false;
         this.currentValue = null; // axis value
@@ -39,7 +39,8 @@ export class UncertaintyCircle {
             position: "absolute",
             top: `${initialPosition.top}px`,
             left: `${initialPosition.left}px`,
-            opacity: "0.01"
+            opacity: "0.01",
+            zIndex: "1" 
         });
         return circle;
     }

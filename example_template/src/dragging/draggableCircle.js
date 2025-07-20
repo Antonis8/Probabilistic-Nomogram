@@ -24,7 +24,7 @@ export class DraggableCircle {
         // c = y- mx
         this.slope = slope; // The gradient m
         this.intercept = initialPosition.top - this.slope * initialPosition.left;
-
+        
 
         document.body.appendChild(this.circle);
     }
@@ -35,14 +35,17 @@ export class DraggableCircle {
             width: `${this.radius}px`,
             height: `${this.radius}px`,
             borderRadius: "50%",
-            backgroundColor: "blue",
+            backgroundColor: "black",
             position: "absolute",
             top: `${initialPosition.top}px`,
             left: `${initialPosition.left}px`,
-            cursor: "grab"
+            cursor: "grab",
+            zIndex: "100"
         });
         return circle;
     }
+
+    // Uncertainty methods
     generateNoisyPoints(n, mean, std){
         const points = [];
         for (let i = 0; i < n; i++) {
@@ -111,8 +114,35 @@ export class DraggableCircle {
         return uncertaintyCircles
     }
 
-    
+    getNearestValueFromCoordinates(targetCoordinates) {
+        // can be optimized with grad descent, but for now, we will use brute force
+        // Input: targetCoordinates is an array [X, Y]
+        let closestDistance = Infinity;
+        let currentDistance;
+        let closestValue;
+        for (const key in this.coordToValueMap) {
+            const [x, y] = JSON.parse(key);
+            currentDistance = this.L2Norm(x, y, targetCoordinates[0], targetCoordinates[1]);
+            if (currentDistance < closestDistance) {
+                closestDistance = currentDistance;
+                closestValue = this.coordToValueMap[key];
+            }
+        }
+        return closestValue;
+    }
+    L2Norm(x1, y1, x2, y2) {
+        return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 
+    }
+
+    getCurrentPosition() {
+        return [
+            parseFloat(this.circle.style.left),
+            parseFloat(this.circle.style.top)
+        ];
+    }
+    
+    // Ineractivity methods
     attachEventListeners() {
         this.circle.addEventListener("mousedown", (event) => this.onMouseDown(event));
         this.circle.addEventListener("dragstart", (event) => event.preventDefault());
@@ -160,12 +190,14 @@ export class DraggableCircle {
                 // Set the new position, snapping to the nearest valid point on our line
                 this.circle.style.left = `${projectedX}px`;
                 this.circle.style.top = `${projectedY}px`;
+
+                
             }
                 
             // Update lines if they exist
             if (this.next_line) this.next_line.updateLine();
             if (this.prev_line) this.prev_line.updateLine();
-            
+            console.log(" Closest value: ", this.getNearestValueFromCoordinates(this.getCurrentPosition()));
         };
 
         const onMouseMove = (event) => {

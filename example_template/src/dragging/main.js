@@ -8,11 +8,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const numberConfusionCircles = 2000;
     const std = 0.7;
-    const mean = 0.5; 
+    const mean = 5; 
 
     // make dynamic
     const circles=  [];
-    const numCircles= 3;
+    const numCircles= 2;
 
     function createSVGContainer() {
         const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
