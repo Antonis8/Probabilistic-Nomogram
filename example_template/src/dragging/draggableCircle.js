@@ -190,6 +190,12 @@ export class DraggableCircle {
         }
     }
 
+    // Vary std with slider
+    setUncertaintyStd(newStd) {
+        this.uncertaintyStd = newStd;
+        this.updateDynamicUncertaintyCircles()
+    }
+
     getCurrentPosition() {
         return [
             parseFloat(this.circle.style.left),

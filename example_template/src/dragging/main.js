@@ -2,6 +2,7 @@ import { ConnectingLine } from "./connectingLine.js";
 import { DraggableCircle } from "./draggableCircle.js";
 import { UncertaintyCircle } from "./uncertaintyCircle.js";
 import { ClickableLock } from "./clickableLock.js";
+import { UncertaintySlider } from "./uncertaintySlider.js";
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -84,7 +85,18 @@ document.addEventListener("DOMContentLoaded", function () {
             sortedValues: sortedValues,
         });
 
-        circles.push(newCircle)
+        circles.push(newCircle);
+    
+        const slider = new UncertaintySlider({
+            axisData: {
+                xMin: xMin,
+                xMax: xMax,
+                yMax: yMax
+            },
+            onStdChange: (newStd) => {
+                newCircle.setUncertaintyStd(newStd);
+            }
+        });
     }
     }
     makeIsopleths();
@@ -130,12 +142,3 @@ document.addEventListener("DOMContentLoaded", function () {
 
     makeLock(570, 15, 570, 582);
 });
-    // const lockPositions = [
-    //     { left: 5+ horizontalLockIncrement, top: 582 + verticalLockIncrement },
-    //     { left: 250 + 2*horizontalLockIncrement,  top: 330 +1.5*verticalLockIncrement },
-    //     { left: 570, top: 582 + 0.5*verticalLockIncrement}
-    // ];
-    
-    // lockPositions.forEach(position => {
-    //     new ClickableLock({ position });
-    // });
