@@ -15,7 +15,7 @@ export class DraggableCircle {
         // uncertainty properties
         this.uncertaintyCircles = [];
         this.uncertaintyStd = 0.7;
-        this.uncertaintyCount = 500;
+        this.uncertaintyCount = 1000;
 
         // Create a circle element
         this.circle = this.createCircleElement(initialPosition);
@@ -30,6 +30,8 @@ export class DraggableCircle {
         this.slope = slope; // The gradient m
         this.intercept = initialPosition.top - this.slope * initialPosition.left;
         
+        // Create pool once at initialization
+        this.createUncertaintyPool();
 
         document.body.appendChild(this.circle);
     }
@@ -115,7 +117,7 @@ export class DraggableCircle {
             uncertaintyCircles.push(nearestCoordinates);
         }
 
-        console.log(uncertaintyCircles);
+        //console.log(uncertaintyCircles);
         return uncertaintyCircles
     }
 
@@ -150,37 +152,41 @@ export class DraggableCircle {
         this.uncertaintyCircles = [];
     }
 
-    createDynamicUncertaintyCircles() {
-        this.clearUncertaintyCircles();
-        
-        // Get current value as mean
+    // Create pool of reusable DOM elements
+    createUncertaintyPool() {
+        for (let i = 0; i < this.uncertaintyCount; i++) {
+            const circle = document.createElement("div");
+            Object.assign(circle.style, {
+                width: "7px",
+                height: "7px",
+                borderRadius: "50%",
+                backgroundColor: "black",
+                position: "absolute",
+                opacity: "0.03",
+                zIndex: "1"
+            });
+            document.body.appendChild(circle);
+            this.uncertaintyCircles.push(circle);
+        }
+    }
+
+    updateDynamicUncertaintyCircles() {
         const currentValue = this.getNearestValueFromCoordinates(this.getCurrentPosition());
         if (currentValue === undefined) return;
         
-        // Generate uncertainty circles with current value as mean
         const uncertaintyCoords = this.makeUncertaintyCircles(
             this.uncertaintyCount, 
             currentValue, 
             this.uncertaintyStd
         );
-        for (const coordString of uncertaintyCoords) {
-            const coord = JSON.parse(coordString);
-            const x = coord[0];
-            const y = coord[1];
+        
+        // Update position of existing circles
+        for (let i = 0; i < uncertaintyCoords.length; i++) {
+            const coord = JSON.parse(uncertaintyCoords[i]);
+            const circle = this.uncertaintyCircles[i];
             
-            const uncertaintyCircle = new UncertaintyCircle({
-                initialPosition: { top: y, left: x },
-                bounds: this.bounds,
-                slope: this.slope,
-                valueMin: this.valueMin,
-                valueMax: this.valueMax,
-                isLinearScale: this.isLinearScale,
-                coordToValueMap: this.coordToValueMap,
-                valueToCoordMap: this.valueToCoordMap,
-                sortedValues: this.sortedValues
-            });
-            
-            this.uncertaintyCircles.push(uncertaintyCircle);
+            circle.style.left = `${coord[0]}px`;
+            circle.style.top = `${coord[1]}px`;
         }
     }
 
@@ -248,7 +254,7 @@ export class DraggableCircle {
             if (this.prev_line) this.prev_line.updateLine();
             
             // Create dynamic uncertainty circles based on current position
-            this.createDynamicUncertaintyCircles();
+            this.updateDynamicUncertaintyCircles();
             
             console.log(" Closest value: ", this.getNearestValueFromCoordinates(this.getCurrentPosition()));
         };
