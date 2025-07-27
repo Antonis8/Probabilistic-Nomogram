@@ -1,8 +1,9 @@
 export class UncertaintyConnectingLine {
-    constructor({ draggableCircle1, draggableCircle2 }) {
+    constructor({ draggableCircle1, draggableCircle2, inactiveAxisData = null }) {
         this.draggableCircle1 = draggableCircle1;
         this.draggableCircle2 = draggableCircle2;
-        this.lineCount = 50;
+        this.inactiveAxisData = inactiveAxisData;
+        this.lineCount = 100;
         this.lines = [];
         
         this.randomIndices1 = [];
@@ -37,7 +38,6 @@ export class UncertaintyConnectingLine {
         const circles1 = this.draggableCircle1.uncertaintyCircles;
         const circles2 = this.draggableCircle2.uncertaintyCircles;
         
-        // Check if both circles have uncertainty circles positioned
         if (circles1.length === 0 || circles2.length === 0) return;
         if (!circles1[0].style.left || !circles2[0].style.left) return;
         
@@ -51,10 +51,46 @@ export class UncertaintyConnectingLine {
             const endY = parseInt(circle2.style.top) + 3.5;
             
             const line = this.lines[i];
+            
+            if (this.inactiveAxisData) {
+                // Extend line from active circles to inactive axis
+                const extendedPoint = this.extendLineToInactiveAxis(startX, startY, endX, endY);
+                if (extendedPoint) {
+                    line.setAttribute("x1", extendedPoint.x);
+                    line.setAttribute("y1", extendedPoint.y);
+                    line.setAttribute("x2", endX);
+                    line.setAttribute("y2", endY);
+                    continue;
+                }
+            }
+            
             line.setAttribute("x1", startX);
             line.setAttribute("y1", startY);
             line.setAttribute("x2", endX);
             line.setAttribute("y2", endY);
         }
+    }
+
+    extendLineToInactiveAxis(x1, y1, x2, y2) {
+        if (!this.inactiveAxisData) return null;
+        
+        const axisX = (this.inactiveAxisData.xMin + this.inactiveAxisData.xMax) / 2;
+        
+        if (x1 === x2) {
+            // Vertical line case
+            return { x: axisX, y: y1 };
+        }
+        
+        // Calculate line equation and extend to inactive axis
+        const slope = (y2 - y1) / (x2 - x1);
+        const intercept = y1 - slope * x1;
+        const intersectionY = slope * axisX + intercept;
+        
+        // Check if intersection is within axis bounds
+        if (intersectionY >= this.inactiveAxisData.yMin && intersectionY <= this.inactiveAxisData.yMax) {
+            return { x: axisX, y: intersectionY };
+        }
+        
+        return null;
     }
 }

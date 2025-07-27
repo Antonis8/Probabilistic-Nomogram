@@ -105,18 +105,22 @@ document.addEventListener("DOMContentLoaded", function () {
     makeIsopleths();
         
     function makeIsopleths() {
+        const inactiveAxisData = axisCoordsMap["Axis 1"];
+        
         for (let i = 0; i< numCircles-1; i++ ){
             const connectingLine = new ConnectingLine ({
                 circle1: circles[i],
                 circle2: circles[i+1],
-                opacity: "1"
+                opacity: "1",
+                inactiveAxisData: inactiveAxisData
             })
             circles[i].next_line = connectingLine
             circles[i+1].prev_line = connectingLine
             
             const uncertaintyLine = new UncertaintyConnectingLine({
                 draggableCircle1: circles[i],
-                draggableCircle2: circles[i+1]
+                draggableCircle2: circles[i+1],
+                inactiveAxisData: inactiveAxisData
             })
             circles[i].uncertainty_line = uncertaintyLine
             circles[i+1].uncertainty_line = uncertaintyLine
