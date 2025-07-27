@@ -15,7 +15,7 @@ export class DraggableCircle {
         // uncertainty properties
         this.uncertaintyCircles = [];
         this.uncertaintyStd = 0.7;
-        this.uncertaintyCount = 1000;
+        this.uncertaintyCount = 500;
 
         // Create a circle element
         this.circle = this.createCircleElement(initialPosition);
@@ -23,6 +23,7 @@ export class DraggableCircle {
         //initialize isopleths
         this.next_line = null; // Line connecting this circle to the next
         this.prev_line = null;
+        this.uncertainty_line = null; // Uncertainty line connecting this circle to another
         this.attachEventListeners();
 
         // Compute intercept c from y = mx + c
@@ -258,6 +259,7 @@ export class DraggableCircle {
             // Update lines if they exist
             if (this.next_line) this.next_line.updateLine();
             if (this.prev_line) this.prev_line.updateLine();
+            if (this.uncertainty_line) this.uncertainty_line.updateLines();
             
             // Create dynamic uncertainty circles based on current position
             this.updateDynamicUncertaintyCircles();

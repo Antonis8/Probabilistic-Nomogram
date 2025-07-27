@@ -3,6 +3,7 @@ import { DraggableCircle } from "./draggableCircle.js";
 import { UncertaintyCircle } from "./uncertaintyCircle.js";
 import { ClickableLock } from "./clickableLock.js";
 import { UncertaintySlider } from "./uncertaintySlider.js";
+import { UncertaintyConnectingLine } from "./uncertaintyConnectingLine.js";
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -110,6 +111,13 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             circles[i].next_line = connectingLine
             circles[i+1].prev_line = connectingLine
+            
+            const uncertaintyLine = new UncertaintyConnectingLine({
+                draggableCircle1: circles[i],
+                draggableCircle2: circles[i+1]
+            })
+            circles[i].uncertainty_line = uncertaintyLine
+            circles[i+1].uncertainty_line = uncertaintyLine
         }
     }
 
