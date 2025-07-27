@@ -2,9 +2,13 @@ export class UncertaintySlider {
     constructor({ axisData, onStdChange }) {
         this.axisData = axisData;
         this.onStdChange = onStdChange;
-        this.minStd = 0.2;
-        this.maxStd = 1;
-        this.currentStd = 0.7; // default
+        
+        // Scale std based on value range
+        const valueRange = Math.abs(axisData.valueMax - axisData.valueMin);
+        this.minStd = valueRange * 0.01; // 1% of range
+        this.maxStd = valueRange * 0.05; // 5% of range
+        this.currentStd = (this.minStd + this.maxStd) / 2; // avg
+        
         this.x = (axisData.xMin + axisData.xMax) / 2 + 15;
         this.y = axisData.yMax + 50;
         this.createSliderElements();

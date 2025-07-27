@@ -269,7 +269,7 @@ export class DraggableCircle {
             // Create dynamic uncertainty circles based on current position
             this.updateDynamicUncertaintyCircles();
             
-            console.log(" Closest value: ", this.getNearestValueFromCoordinates(this.getCurrentPosition()));
+            //console.log(" Closest value: ", this.getNearestValueFromCoordinates(this.getCurrentPosition()));
         };
 
         const onMouseMove = (event) => {

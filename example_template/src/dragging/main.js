@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", function () {
             slope = -1 * slope; // flip the slope for Axis 2
         }
 
-        if (axisKey != "Axis 2") { //skip locked axis, for example the middle one.
+        if (axisKey != "Axis 1") { //skip locked axis, for example the middle one.
         const newCircle = new DraggableCircle({
             initialPosition: { top: yMin, left:xMax },
             bounds: ybounds,
@@ -92,7 +92,9 @@ document.addEventListener("DOMContentLoaded", function () {
             axisData: {
                 xMin: xMin,
                 xMax: xMax,
-                yMax: yMax
+                yMax: yMax,
+                valueMin: valueMin,
+                valueMax: valueMax
             },
             onStdChange: (newStd) => {
                 newCircle.setUncertaintyStd(newStd);
