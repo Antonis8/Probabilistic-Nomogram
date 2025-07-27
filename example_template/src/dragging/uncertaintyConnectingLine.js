@@ -4,9 +4,20 @@ export class UncertaintyConnectingLine {
         this.draggableCircle2 = draggableCircle2;
         this.lineCount = 50;
         this.lines = [];
+        
+        this.randomIndices1 = [];
+        this.randomIndices2 = [];
+        this.generateRandomIndices();
 
         this.createLinePool();
         this.updateLines();
+    }
+
+    generateRandomIndices() { // Pre cache which indices we pick. Will stay constant
+        for (let i = 0; i < this.lineCount; i++) {
+            this.randomIndices1[i] = Math.floor(Math.random() * 500);
+            this.randomIndices2[i] = Math.floor(Math.random() * 500);
+        }
     }
 
     createLinePool() {
@@ -31,11 +42,8 @@ export class UncertaintyConnectingLine {
         if (!circles1[0].style.left || !circles2[0].style.left) return;
         
         for (let i = 0; i < this.lineCount; i++) {
-            const randomIndex1 = Math.floor(Math.random() * circles1.length);
-            const randomIndex2 = Math.floor(Math.random() * circles2.length);
-            
-            const circle1 = circles1[randomIndex1];
-            const circle2 = circles2[randomIndex2];
+            const circle1 = circles1[this.randomIndices1[i]];
+            const circle2 = circles2[this.randomIndices2[i]];
             
             const startX = parseInt(circle1.style.left) + 3.5;
             const startY = parseInt(circle1.style.top) + 3.5;
