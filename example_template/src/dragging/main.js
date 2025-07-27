@@ -8,9 +8,6 @@ import { UncertaintyConnectingLine } from "./uncertaintyConnectingLine.js";
 document.addEventListener("DOMContentLoaded", function () {
 
 
-    const numberConfusionCircles = 2000;
-    const std = 0.7;
-    const mean = 5; 
 
     // make dynamic
     const circles=  [];
@@ -100,6 +97,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 newCircle.setUncertaintyStd(newStd);
             }
         });
+        // defai;t std defined in slider
+        newCircle.setUncertaintyStd(slider.currentStd);
     }
     }
     makeIsopleths();
