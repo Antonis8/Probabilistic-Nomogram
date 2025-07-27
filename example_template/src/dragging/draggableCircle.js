@@ -194,7 +194,12 @@ export class DraggableCircle {
     // Vary std with slider
     setUncertaintyStd(newStd) {
         this.uncertaintyStd = newStd;
-        this.updateDynamicUncertaintyCircles()
+        this.updateDynamicUncertaintyCircles();
+        
+        // Update uncertainty lines if they exist
+        if (this.uncertainty_line) {
+            this.uncertainty_line.updateLines();
+        }
     }
 
     getCurrentPosition() {
