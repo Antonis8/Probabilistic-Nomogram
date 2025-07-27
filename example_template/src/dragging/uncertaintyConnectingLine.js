@@ -26,6 +26,10 @@ export class UncertaintyConnectingLine {
         const circles1 = this.draggableCircle1.uncertaintyCircles;
         const circles2 = this.draggableCircle2.uncertaintyCircles;
         
+        // Check if both circles have uncertainty circles positioned
+        if (circles1.length === 0 || circles2.length === 0) return;
+        if (!circles1[0].style.left || !circles2[0].style.left) return;
+        
         for (let i = 0; i < this.lineCount; i++) {
             const randomIndex1 = Math.floor(Math.random() * circles1.length);
             const randomIndex2 = Math.floor(Math.random() * circles2.length);
