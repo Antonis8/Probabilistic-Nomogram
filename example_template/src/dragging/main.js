@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // make dynamic
     const circles=  [];
-    const numCircles= 2;
+    const numCircles= 3;
 
     function createSVGContainer() {
         const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", function () {
             slope = -1 * slope; // flip the slope for Axis 2
         }
 
-        if (axisKey != "Axis 1") { //skip locked axis, for example the middle one.
+        if (axisKey != "Axis 9") { //skip locked axis, for example the middle one.
         const newCircle = new DraggableCircle({
             initialPosition: { top: yMin, left:xMax },
             bounds: ybounds,
