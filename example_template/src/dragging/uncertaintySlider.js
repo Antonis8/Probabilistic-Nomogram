@@ -7,7 +7,7 @@ export class UncertaintySlider {
         const valueRange = Math.abs(axisData.valueMax - axisData.valueMin);
         this.minStd = valueRange * 0.01; // 1% of range
         this.maxStd = valueRange * 0.05; // 5% of range
-        this.currentStd = this.minStd; // avg
+        this.currentStd = this.minStd*2; // avg
         
         this.x = (axisData.xMin + axisData.xMax) / 2 + 15;
         this.y = axisData.yMax + 50;

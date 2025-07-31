@@ -9,10 +9,6 @@ import { UncertaintyToggle } from "./uncertaintyToggle.js";
 document.addEventListener("DOMContentLoaded", function () {
 
 
-    const numberConfusionCircles = 2000;
-    const std = 0.7;
-    const mean = 5; 
-
     // make dynamic
     const circles=  [];
     const numCircles= 3;
@@ -76,7 +72,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (axisKey != "Axis 9") { //skip locked axis, for example the middle one.
         const newCircle = new DraggableCircle({
-            initialPosition: { top: yMin, left:xMax },
+            initialPosition: { top: (yMin+yMax)/2, left:(xMax+xMin)/2 },
             bounds: ybounds,
             slope: slope,
             valueMin: valueMin,
@@ -100,7 +96,9 @@ document.addEventListener("DOMContentLoaded", function () {
             onStdChange: (newStd) => {
                 newCircle.setUncertaintyStd(newStd);
             }
+            
         });
+        newCircle.setUncertaintyStd(slider.currentStd);
     }
     }
     makeIsopleths();
@@ -154,10 +152,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // lock: calc x midpoint b/w axes.
-    // if vertical: (M_x, y_end + c)
-    // if horizontal: (M_x, M_y +c)
-    // if diagonal: (M_x, M_y + 2c)
 }
 );
 
