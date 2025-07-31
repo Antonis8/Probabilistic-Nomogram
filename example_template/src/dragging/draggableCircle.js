@@ -1,6 +1,6 @@
 import { UncertaintyCircle } from "./uncertaintyCircle.js";
 export class DraggableCircle {
-    constructor({ slope, initialPosition, bounds, valueMin, valueMax, coordToValueMap, valueToCoordMap, sortedValues, isLinearScale }) {
+    constructor({ slope, initialPosition, bounds, valueMin, valueMax, coordToValueMap, valueToCoordMap, sortedValues, isLinearScale, circleIndex, onMove }) {
         this.radius = 10;
         this.bounds = bounds;
         this.isDragging = false;
@@ -11,6 +11,8 @@ export class DraggableCircle {
         this.valueToCoordMap = valueToCoordMap; // {0.0: "[6.1, 12.4]", 0.1: "[6.1, 15.3]", ...}
         this.sortedValues = sortedValues; // [0.0, 0.1, 0.2, ...]
         this.isLinearScale = isLinearScale;
+        this.circleIndex = circleIndex;
+        this.onMove = onMove;
 
         // uncertainty properties
         this.uncertaintyCircles = [];
@@ -280,6 +282,10 @@ export class DraggableCircle {
             
             // Create dynamic uncertainty circles based on current position
             this.updateDynamicUncertaintyCircles();
+            
+            if (this.onMove) {
+                this.onMove(this.circleIndex);
+            }
             
             //console.log(" Closest value: ", this.getNearestValueFromCoordinates(this.getCurrentPosition()));
         };

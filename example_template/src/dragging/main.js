@@ -12,6 +12,9 @@ document.addEventListener("DOMContentLoaded", function () {
     // make dynamic
     const circles=  [];
     const numCircles= 3;
+    
+    let moveHistory = [1, 2, 3];
+    let lastHistoryString = moveHistory.toString();
 
     function createSVGContainer() {
         const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -81,6 +84,22 @@ document.addEventListener("DOMContentLoaded", function () {
             coordToValueMap: coordToValueMap,
             valueToCoordMap: valueToCoordMap,
             sortedValues: sortedValues,
+
+            // track recency of dragging
+            circleIndex: circles.length + 1,
+            onMove: (circleIndex) => {
+                const existingIndex = moveHistory.indexOf(circleIndex);
+                if (existingIndex !== -1) {
+                    moveHistory.splice(existingIndex, 1);
+                }
+                moveHistory.unshift(circleIndex);
+                
+                const currentHistoryString = moveHistory.toString();
+                if (currentHistoryString !== lastHistoryString) {
+                    console.log("History:", moveHistory);
+                    lastHistoryString = currentHistoryString;
+                }
+            }
         });
 
         circles.push(newCircle);
