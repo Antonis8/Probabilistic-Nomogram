@@ -16,6 +16,9 @@ document.addEventListener("DOMContentLoaded", function () {
     let moveHistory = [1, 2, 3];
     let lastHistoryString = moveHistory.toString();
 
+    const outputColor = "green";
+    const inputColor = "black";
+
     function createSVGContainer() {
         const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         svg.style.position = "absolute";
@@ -98,6 +101,21 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (currentHistoryString !== lastHistoryString) {
                     console.log("History:", moveHistory);
                     lastHistoryString = currentHistoryString;
+                    
+                    // Update circle colors based on LRU
+                    circles.forEach((circle, index) => {
+                        if (moveHistory[moveHistory.length - 1] === index + 1) {
+                            circle.circle.style.backgroundColor = outputColor;
+                            circle.uncertaintyCircles.forEach(uncertaintyCircle => {
+                                uncertaintyCircle.style.backgroundColor = outputColor;
+                            });
+                        } else {
+                            circle.circle.style.backgroundColor = inputColor;
+                            circle.uncertaintyCircles.forEach(uncertaintyCircle => {
+                                uncertaintyCircle.style.backgroundColor = inputColor;
+                            });
+                        }
+                    });
                 }
             }
         });
@@ -121,6 +139,16 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     }
     makeIsopleths();
+    
+    // Set initial colors
+    circles.forEach((circle, index) => {
+        if (moveHistory[moveHistory.length - 1] === index + 1) {
+            circle.circle.style.backgroundColor = outputColor;
+            circle.uncertaintyCircles.forEach(uncertaintyCircle => {
+                uncertaintyCircle.style.backgroundColor = outputColor;
+            });
+        }
+    });
     
     const axis3Data = axisCoordsMap["Axis 3"];
     const togglePosition = {
