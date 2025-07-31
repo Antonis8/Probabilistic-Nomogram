@@ -4,6 +4,7 @@ import { UncertaintyCircle } from "./uncertaintyCircle.js";
 import { ClickableLock } from "./clickableLock.js";
 import { UncertaintySlider } from "./uncertaintySlider.js";
 import { UncertaintyConnectingLine } from "./uncertaintyConnectingLine.js";
+import { UncertaintyToggle } from "./uncertaintyToggle.js";
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -103,6 +104,31 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     }
     makeIsopleths();
+    
+    const axis3Data = axisCoordsMap["Axis 3"];
+    const togglePosition = {
+        x: axis3Data.xMax + 100,
+        y: axis3Data.yMin + 10
+    };
+    
+    new UncertaintyToggle({
+        position: togglePosition,
+        onToggle: (isOn) => {
+            circles.forEach(circle => {
+                circle.uncertaintyCircles.forEach(uncertaintyCircle => {
+                    uncertaintyCircle.style.display = isOn ? "block" : "none";
+                });
+                
+                if (circle.shared_uncertainty_lines) {
+                    circle.shared_uncertainty_lines.forEach(uncertaintyLine => {
+                        uncertaintyLine.lines.forEach(line => {
+                            line.style.display = isOn ? "block" : "none";
+                        });
+                    });
+                }
+            });
+        }
+    });
         
     function makeIsopleths() {
         for (let i = 0; i< numCircles-1; i++ ){
@@ -137,23 +163,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-document.addEventListener("DOMContentLoaded", function () {
-    let verticalLockIncrement = 50;
-    let horizontalLockIncrement = 10;
+// document.addEventListener("DOMContentLoaded", function () {
+//     let verticalLockIncrement = 50;
+//     let horizontalLockIncrement = 10;
 
-    function makeLock(x1, y1, x2, y2) {
-        let midX = (x1 + x2) / 2;
-        let midY = (y1 + y2) / 2;
-        let lockPosition;
+//     function makeLock(x1, y1, x2, y2) {
+//         let midX = (x1 + x2) / 2;
+//         let midY = (y1 + y2) / 2;
+//         let lockPosition;
         
-        if ((x1 - x2) === 0 || (y1 - y2) === 0) { // vertical/horizontal
-            lockPosition = { left: midX + "px", top: y2 + verticalLockIncrement + "px" };
-        } else {
-            lockPosition = { left: midX + horizontalLockIncrement + "px", top: midY + 2 * verticalLockIncrement + "px" };
-        }
+//         if ((x1 - x2) === 0 || (y1 - y2) === 0) { // vertical/horizontal
+//             lockPosition = { left: midX + "px", top: y2 + verticalLockIncrement + "px" };
+//         } else {
+//             lockPosition = { left: midX + horizontalLockIncrement + "px", top: midY + 2 * verticalLockIncrement + "px" };
+//         }
         
-        new ClickableLock({ position: lockPosition });
-    }
+//         new ClickableLock({ position: lockPosition });
+//     }
 
-    makeLock(570, 15, 570, 582);
-});
+//     makeLock(570, 15, 570, 582);
+// });
