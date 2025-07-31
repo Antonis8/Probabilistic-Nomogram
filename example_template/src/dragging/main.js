@@ -120,6 +120,11 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             circles[i].uncertainty_line = uncertaintyLine
             circles[i+1].uncertainty_line = uncertaintyLine
+            
+            circles[i].shared_uncertainty_lines = circles[i].shared_uncertainty_lines || [];
+            circles[i+1].shared_uncertainty_lines = circles[i+1].shared_uncertainty_lines || [];
+            circles[i].shared_uncertainty_lines.push(uncertaintyLine);
+            circles[i+1].shared_uncertainty_lines.push(uncertaintyLine);
         }
     }
 

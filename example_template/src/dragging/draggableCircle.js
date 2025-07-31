@@ -266,6 +266,12 @@ export class DraggableCircle {
             if (this.prev_line) this.prev_line.updateLine();
             if (this.uncertainty_line) this.uncertainty_line.updateLines();
             
+            if (this.shared_uncertainty_lines) {
+                this.shared_uncertainty_lines.forEach(uncertaintyLine => {
+                    uncertaintyLine.updateLines();
+                });
+            }
+            
             // Create dynamic uncertainty circles based on current position
             this.updateDynamicUncertaintyCircles();
             
