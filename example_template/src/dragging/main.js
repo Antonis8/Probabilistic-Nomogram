@@ -19,6 +19,125 @@ document.addEventListener("DOMContentLoaded", function () {
     const outputColor = "green";
     const inputColor = "black";
 
+    function calculateLineIntersection(x1, y1, x2, y2, x3, y3, x4, y4) {
+        const denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+        if (Math.abs(denom) < 1e-10) return null;
+        
+        const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom;
+        const u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denom;
+        
+        if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
+            return {
+                x: x1 + t * (x2 - x1),
+                y: y1 + t * (y2 - y1)
+            };
+        }
+        return null;
+    }
+
+    function getCirclePosition(circle) {
+        return {
+            x: parseFloat(circle.circle.style.left),
+            y: parseFloat(circle.circle.style.top)
+        };
+    }
+
+    function moveCircleToPosition(circle, targetX, targetY) {
+        let finalX, finalY;
+        
+        // Respect the axis constraints like the dragging logic does
+        if (!isFinite(circle.slope)) {
+            // Vertical axis - only Y movement allowed
+            finalX = parseFloat(circle.circle.style.left); // Keep current X
+            finalY = targetY;
+            
+            // Stay within bounds
+            if (finalY < circle.bounds.lower) {
+                finalY = circle.bounds.lower;
+            } else if (finalY > circle.bounds.upper) {
+                finalY = circle.bounds.upper;
+            }
+        } else {
+            // Finite slope axis - project target onto the axis line
+            let projectedX = targetX;
+            let projectedY = circle.slope * projectedX + circle.intercept;
+            
+            // Stay within bounds
+            if (projectedY < circle.bounds.lower) {
+                projectedY = circle.bounds.lower;
+                projectedX = (projectedY - circle.intercept) / circle.slope;
+            } else if (projectedY > circle.bounds.upper) {
+                projectedY = circle.bounds.upper;
+                projectedX = (projectedY - circle.intercept) / circle.slope;
+            }
+            
+            finalX = projectedX;
+            finalY = projectedY;
+        }
+        
+        // Set the constrained position
+        circle.circle.style.left = `${finalX}px`;
+        circle.circle.style.top = `${finalY}px`;
+        circle.updateDynamicUncertaintyCircles();
+        
+        if (circle.next_line) circle.next_line.updateLine();
+        if (circle.prev_line) circle.prev_line.updateLine();
+        if (circle.shared_uncertainty_lines) {
+            circle.shared_uncertainty_lines.forEach(line => line.updateLines());
+        }
+    }
+
+    function updateLRUCircle() {
+        if (circles.length < 3) return;
+        
+        const mostRecent = circles[moveHistory[0] - 1];
+        const secondRecent = circles[moveHistory[1] - 1];
+        const lruCircle = circles[moveHistory[2] - 1];
+        
+        const pos1 = getCirclePosition(mostRecent);
+        const pos2 = getCirclePosition(secondRecent);
+        
+        const lruAxisData = Object.values(axisCoordsMap)[moveHistory[2] - 1];
+        
+        let targetX, targetY;
+        
+        if (!isFinite(lruCircle.slope)) {
+            // Vertical axis - find intersection with trajectory line at axis X coordinate
+            const axisX = (lruAxisData.xMin + lruAxisData.xMax) / 2;
+            
+            // Calculate trajectory line equation: y = mx + b
+            const trajectorySlope = (pos2.y - pos1.y) / (pos2.x - pos1.x);
+            const trajectoryIntercept = pos1.y - trajectorySlope * pos1.x;
+            
+            // Find Y at axis X coordinate
+            targetY = trajectorySlope * axisX + trajectoryIntercept;
+            targetX = axisX;
+        } else {
+            // Finite slope axis - find closest point on axis line to trajectory line
+            // Use line intersection between trajectory and extended axis line
+            
+            // Trajectory line parameters
+            const trajectorySlope = (pos2.y - pos1.y) / (pos2.x - pos1.x);
+            const trajectoryIntercept = pos1.y - trajectorySlope * pos1.x;
+            
+            // Axis line parameters
+            const axisSlope = lruCircle.slope;
+            const axisIntercept = lruCircle.intercept;
+            
+            // Find intersection: trajectorySlope * x + trajectoryIntercept = axisSlope * x + axisIntercept
+            if (Math.abs(trajectorySlope - axisSlope) < 1e-10) {
+                // Lines are parallel, use current position
+                return;
+            }
+            
+            targetX = (axisIntercept - trajectoryIntercept) / (trajectorySlope - axisSlope);
+            targetY = axisSlope * targetX + axisIntercept;
+        }
+        
+        // Move to the calculated target position (will be constrained by moveCircleToPosition)
+        moveCircleToPosition(lruCircle, targetX, targetY);
+    }
+
     function createSVGContainer() {
         const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         svg.style.position = "absolute";
@@ -91,6 +210,8 @@ document.addEventListener("DOMContentLoaded", function () {
             // track recency of dragging
             circleIndex: circles.length + 1,
             onMove: (circleIndex) => {
+                updateLRUCircle();
+                
                 const existingIndex = moveHistory.indexOf(circleIndex);
                 if (existingIndex !== -1) {
                     moveHistory.splice(existingIndex, 1);
@@ -102,7 +223,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     console.log("History:", moveHistory);
                     lastHistoryString = currentHistoryString;
                     
-                    // Update circle colors based on LRU
                     circles.forEach((circle, index) => {
                         if (moveHistory[moveHistory.length - 1] === index + 1) {
                             circle.circle.style.backgroundColor = outputColor;
