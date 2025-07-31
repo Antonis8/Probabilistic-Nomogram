@@ -200,6 +200,12 @@ export class DraggableCircle {
         if (this.uncertainty_line) {
             this.uncertainty_line.updateLines();
         }
+        
+        if (this.shared_uncertainty_lines) {
+            this.shared_uncertainty_lines.forEach(uncertaintyLine => {
+                uncertaintyLine.updateLines();
+            });
+        }
     }
 
     getCurrentPosition() {
