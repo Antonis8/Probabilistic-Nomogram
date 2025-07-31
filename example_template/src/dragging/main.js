@@ -87,8 +87,74 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    function isMovementValid(movingCircleIndex, newX, newY) {
+        if (circles.length < 3) return true; // Allow movement if not enough circles
+        
+        // Create a temporary position to test
+        const originalPosition = getCirclePosition(circles[movingCircleIndex - 1]);
+        
+        // Temporarily set the new position
+        circles[movingCircleIndex - 1].circle.style.left = `${newX}px`;
+        circles[movingCircleIndex - 1].circle.style.top = `${newY}px`;
+        
+        // Test the LRU positioning with this new position
+        const isValid = testLRUPositioning(movingCircleIndex);
+        
+        // Restore original position
+        circles[movingCircleIndex - 1].circle.style.left = `${originalPosition.x}px`;
+        circles[movingCircleIndex - 1].circle.style.top = `${originalPosition.y}px`;
+        
+        return isValid;
+    }
+
+    function testLRUPositioning(movingCircleIndex) {
+        // Create a temporary move history with the moving circle as most recent
+        const tempHistory = [...moveHistory];
+        const existingIndex = tempHistory.indexOf(movingCircleIndex);
+        if (existingIndex !== -1) {
+            tempHistory.splice(existingIndex, 1);
+        }
+        tempHistory.unshift(movingCircleIndex);
+        
+        if (tempHistory.length < 3) return true; // Not enough circles to test
+        
+        const mostRecent = circles[tempHistory[0] - 1];
+        const secondRecent = circles[tempHistory[1] - 1];
+        const lruCircle = circles[tempHistory[2] - 1];
+        
+        const pos1 = getCirclePosition(mostRecent);
+        const pos2 = getCirclePosition(secondRecent);
+        
+        let targetY;
+        
+        if (!isFinite(lruCircle.slope)) {
+            // Vertical axis
+            const axisX = (Object.values(axisCoordsMap)[tempHistory[2] - 1].xMin + 
+                          Object.values(axisCoordsMap)[tempHistory[2] - 1].xMax) / 2;
+            const trajectorySlope = (pos2.y - pos1.y) / (pos2.x - pos1.x);
+            const trajectoryIntercept = pos1.y - trajectorySlope * pos1.x;
+            targetY = trajectorySlope * axisX + trajectoryIntercept;
+        } else {
+            // Finite slope axis
+            const trajectorySlope = (pos2.y - pos1.y) / (pos2.x - pos1.x);
+            const trajectoryIntercept = pos1.y - trajectorySlope * pos1.x;
+            const axisSlope = lruCircle.slope;
+            const axisIntercept = lruCircle.intercept;
+            
+            if (Math.abs(trajectorySlope - axisSlope) < 1e-10) {
+                return true; // Parallel lines, allow movement
+            }
+            
+            const targetX = (axisIntercept - trajectoryIntercept) / (trajectorySlope - axisSlope);
+            targetY = axisSlope * targetX + axisIntercept;
+        }
+        
+        // Check if target position is within bounds
+        return targetY >= lruCircle.bounds.lower && targetY <= lruCircle.bounds.upper;
+    }
+
     function updateLRUCircle() {
-        if (circles.length < 3) return;
+        if (circles.length < 3) return true; // Allow movement if not enough circles
         
         const mostRecent = circles[moveHistory[0] - 1];
         const secondRecent = circles[moveHistory[1] - 1];
@@ -127,15 +193,22 @@ document.addEventListener("DOMContentLoaded", function () {
             // Find intersection: trajectorySlope * x + trajectoryIntercept = axisSlope * x + axisIntercept
             if (Math.abs(trajectorySlope - axisSlope) < 1e-10) {
                 // Lines are parallel, use current position
-                return;
+                return true; // Allow movement
             }
             
             targetX = (axisIntercept - trajectoryIntercept) / (trajectorySlope - axisSlope);
             targetY = axisSlope * targetX + axisIntercept;
         }
         
-        // Move to the calculated target position (will be constrained by moveCircleToPosition)
+        // Check if the target position would be within bounds
+        if (targetY < lruCircle.bounds.lower || targetY > lruCircle.bounds.upper) {
+            // Target position is out of bounds - prevent movement
+            return false;
+        }
+        
+        // Target position is valid - proceed with movement
         moveCircleToPosition(lruCircle, targetX, targetY);
+        return true; // Allow movement
     }
 
     function createSVGContainer() {
@@ -209,6 +282,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // track recency of dragging
             circleIndex: circles.length + 1,
+            onValidateMove: (circleIndex, newX, newY) => {
+                return isMovementValid(circleIndex, newX, newY);
+            },
             onMove: (circleIndex) => {
                 updateLRUCircle();
                 

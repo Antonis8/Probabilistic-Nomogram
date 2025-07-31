@@ -1,6 +1,6 @@
 import { UncertaintyCircle } from "./uncertaintyCircle.js";
 export class DraggableCircle {
-    constructor({ slope, initialPosition, bounds, valueMin, valueMax, coordToValueMap, valueToCoordMap, sortedValues, isLinearScale, circleIndex, onMove }) {
+    constructor({ slope, initialPosition, bounds, valueMin, valueMax, coordToValueMap, valueToCoordMap, sortedValues, isLinearScale, circleIndex, onMove, onValidateMove }) {
         this.radius = 10;
         this.bounds = bounds;
         this.isDragging = false;
@@ -13,6 +13,7 @@ export class DraggableCircle {
         this.isLinearScale = isLinearScale;
         this.circleIndex = circleIndex;
         this.onMove = onMove;
+        this.onValidateMove = onValidateMove;
 
         // uncertainty properties
         this.uncertaintyCircles = [];
@@ -234,51 +235,59 @@ export class DraggableCircle {
 
 
     const moveAt = (pageX, pageY) => {
+        let finalX, finalY;
 
-            if (!isFinite(this.slope)){
-                const projectedY = pageY - shiftY;
+        if (!isFinite(this.slope)){
+            const projectedY = pageY - shiftY;
+            finalX = parseFloat(this.circle.style.left); // Keep current X for vertical axis
 
-                if (projectedY < this.bounds.lower) {
-                    this.circle.style.top = `${this.bounds.lower}px`;
-                } else if (projectedY > this.bounds.upper) {
-                    this.circle.style.top = `${this.bounds.upper}px`;
-                } else {
-                    this.circle.style.top = `${projectedY}px`;
-                }
-            } else { //we have finite slope
-
-                // new X-coordinate
-                let projectedX = (pageX - shiftX);
-
-                // Compute the new Y based on new X
-                let projectedY = this.slope * projectedX + this.intercept;
-                
-                // stay within bounds
-                if (projectedY < this.bounds.lower) {
-                    projectedY = this.bounds.lower;
-                    projectedX = (projectedY - this.intercept) / this.slope;
-                } else if (projectedY > this.bounds.upper) {
-                    projectedY = this.bounds.upper;
-                    projectedX = (projectedY - this.intercept) / this.slope;
-                }
-
-                // Set the new position, snapping to the nearest valid point on our line
-                this.circle.style.left = `${projectedX}px`;
-                this.circle.style.top = `${projectedY}px`;
-
-                
+            if (projectedY < this.bounds.lower) {
+                finalY = this.bounds.lower;
+            } else if (projectedY > this.bounds.upper) {
+                finalY = this.bounds.upper;
+            } else {
+                finalY = projectedY;
             }
-                
-            // Update lines if they exist
-            if (this.next_line) this.next_line.updateLine();
-            if (this.prev_line) this.prev_line.updateLine();
-            if (this.uncertainty_line) this.uncertainty_line.updateLines();
+        } else { //we have finite slope
+            // new X-coordinate
+            let projectedX = (pageX - shiftX);
+
+            // Compute the new Y based on new X
+            let projectedY = this.slope * projectedX + this.intercept;
             
-            if (this.shared_uncertainty_lines) {
-                this.shared_uncertainty_lines.forEach(uncertaintyLine => {
-                    uncertaintyLine.updateLines();
-                });
+            // stay within bounds
+            if (projectedY < this.bounds.lower) {
+                projectedY = this.bounds.lower;
+                projectedX = (projectedY - this.intercept) / this.slope;
+            } else if (projectedY > this.bounds.upper) {
+                projectedY = this.bounds.upper;
+                projectedX = (projectedY - this.intercept) / this.slope;
             }
+
+            finalX = projectedX;
+            finalY = projectedY;
+        }
+        
+        // Validate the movement before applying it
+        if (this.onValidateMove && !this.onValidateMove(this.circleIndex, finalX, finalY)) {
+            // Movement is not valid - don't apply it
+            return;
+        }
+
+        // Movement is valid - apply it
+        this.circle.style.left = `${finalX}px`;
+        this.circle.style.top = `${finalY}px`;
+            
+        // Update lines if they exist
+        if (this.next_line) this.next_line.updateLine();
+        if (this.prev_line) this.prev_line.updateLine();
+        if (this.uncertainty_line) this.uncertainty_line.updateLines();
+        
+        if (this.shared_uncertainty_lines) {
+            this.shared_uncertainty_lines.forEach(uncertaintyLine => {
+                uncertaintyLine.updateLines();
+            });
+        }
             
             // Create dynamic uncertainty circles based on current position
             this.updateDynamicUncertaintyCircles();
