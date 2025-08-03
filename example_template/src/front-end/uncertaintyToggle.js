@@ -8,6 +8,35 @@ export class UncertaintyToggle {
         this.y = position.y;
         this.createToggleElements();
     }
+
+    static setup(controller) {
+        const axisCoordsMap = controller.getAxisCoordsMap();
+        const axis3Data = axisCoordsMap["Axis 3"];
+        const togglePosition = {
+            x: axis3Data.xMax + 100,
+            y: axis3Data.yMin + 10
+        };
+        
+        new UncertaintyToggle({
+            position: togglePosition,
+            onToggle: (isOn) => {
+                const circles = controller.getCircles();
+                circles.forEach(circle => {
+                    circle.uncertaintyCircles.forEach(uncertaintyCircle => {
+                        uncertaintyCircle.style.display = isOn ? "block" : "none";
+                    });
+                    
+                    if (circle.shared_uncertainty_lines) {
+                        circle.shared_uncertainty_lines.forEach(uncertaintyLine => {
+                            uncertaintyLine.lines.forEach(line => {
+                                line.style.display = isOn ? "block" : "none";
+                            });
+                        });
+                    }
+                });
+            }
+        });
+    }
     
     createToggleElements() {
         this.label = document.createElement("div");

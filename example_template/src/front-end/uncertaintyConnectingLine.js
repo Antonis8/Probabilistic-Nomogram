@@ -7,16 +7,16 @@ export class UncertaintyConnectingLine {
         
         this.randomIndices1 = [];
         this.randomIndices2 = [];
+        this.numberOfUncertaintyCircles = draggableCircle1.numberOfUncertaintyCircles;
         this.generateRandomIndices();
-
         this.createLinePool();
         this.updateLines();
     }
 
     generateRandomIndices() { // Pre cache which indices we pick. Will stay constant
         for (let i = 0; i < this.lineCount; i++) {
-            this.randomIndices1[i] = Math.floor(Math.random() * 500);
-            this.randomIndices2[i] = Math.floor(Math.random() * 500);
+            this.randomIndices1[i] = Math.floor(Math.random() * this.numberOfUncertaintyCircles);
+            this.randomIndices2[i] = Math.floor(Math.random() * this.numberOfUncertaintyCircles);
         }
     }
 

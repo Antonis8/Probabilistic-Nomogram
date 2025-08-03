@@ -1,6 +1,6 @@
 import { UncertaintyCircle } from "./uncertaintyCircle.js";
 export class DraggableCircle {
-    constructor({ slope, initialPosition, bounds, valueMin, valueMax, coordToValueMap, valueToCoordMap, sortedValues, isLinearScale, circleIndex, onMove, onValidateMove }) {
+    constructor({ slope, initialPosition, bounds, valueMin, valueMax, coordToValueMap, valueToCoordMap, sortedValues, isLinearScale, circleIndex, onMove, onValidateMove, numberOfUncertaintyCircles }) {
         this.radius = 10;
         this.bounds = bounds;
         this.isDragging = false;
@@ -18,7 +18,8 @@ export class DraggableCircle {
         // uncertainty properties
         this.uncertaintyCircles = [];
         this.uncertaintyStd = 0.7;
-        this.uncertaintyCount = 500;
+        this.numberOfUncertaintyCircles = numberOfUncertaintyCircles;    // Default to 100 if not provided
+        // this.uncertaintyCount = 100 ;
 
         // Create a circle element
         this.circle = this.createCircleElement(initialPosition);
@@ -158,7 +159,7 @@ export class DraggableCircle {
 
     // Create pool of reusable DOM elements
     createUncertaintyPool() {
-        for (let i = 0; i < this.uncertaintyCount; i++) {
+        for (let i = 0; i < this.numberOfUncertaintyCircles; i++) {
             const circle = document.createElement("div");
             Object.assign(circle.style, {
                 width: "7px",
@@ -179,7 +180,7 @@ export class DraggableCircle {
         if (currentValue === undefined) return;
         
         const uncertaintyCoords = this.makeUncertaintyCircles(
-            this.uncertaintyCount, 
+            this.numberOfUncertaintyCircles, 
             currentValue, 
             this.uncertaintyStd
         );
