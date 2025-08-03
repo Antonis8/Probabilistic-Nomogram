@@ -1,4 +1,4 @@
-import { UncertaintyCircle } from "./uncertaintyCircle.js";
+import { UncertaintyCircle } from "../uncertainty-components/uncertaintyCircle.js";
 export class DraggableCircle {
     constructor({ slope, initialPosition, bounds, valueMin, valueMax, coordToValueMap, valueToCoordMap, sortedValues, isLinearScale, circleIndex, onMove, onValidateMove, numberOfUncertaintyCircles }) {
         this.radius = 10;

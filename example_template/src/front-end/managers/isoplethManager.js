@@ -1,5 +1,5 @@
-import { ConnectingLine } from "./connectingLine.js";
-import { UncertaintyConnectingLine } from "./uncertaintyConnectingLine.js";
+import { ConnectingLine } from "../components/base-components/connectingLine.js";
+import { UncertaintyConnectingLine } from "../components/uncertainty-components/uncertaintyConnectingLine.js";
 
 export class IsoplethManager {
     constructor(controller) {

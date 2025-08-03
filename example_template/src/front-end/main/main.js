@@ -1,9 +1,9 @@
-import { UncertaintyToggle } from "./uncertaintyToggle.js";
-import { NomogramController } from "./nomogramController.js";
-import { RulerConstraint } from "./rulerConstraint.js";
-import { GeometryUtils } from "./geometryUtils.js";
-import { IsoplethManager } from "./isoplethManager.js";
-import { CircleFactory } from "./circleFactory.js";
+import { UncertaintyToggle } from "../components/uncertainty-components/uncertaintyToggle.js";
+import { NomogramController } from "../managers/nomogramController.js";
+import { RulerConstraint } from "../managers/rulerConstraint.js";
+import { GeometryUtils } from "../managers/geometryUtils.js";
+import { IsoplethManager } from "../managers/isoplethManager.js";
+import { CircleFactory } from "../managers/circleFactory.js";
 
 document.addEventListener("DOMContentLoaded", function () {
 

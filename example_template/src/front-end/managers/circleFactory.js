@@ -1,5 +1,5 @@
-import { DraggableCircle } from "./draggableCircle.js";
-import { UncertaintySlider } from "./uncertaintySlider.js";
+import { DraggableCircle } from "../components/base-components/draggableCircle.js";
+import { UncertaintySlider } from "../components/uncertainty-components/uncertaintySlider.js";
 
 export class CircleFactory {
     constructor(controller, rulerConstraint, numberOfUncertaintyCircles) {
