@@ -51,7 +51,7 @@ export class RulerConstraint {
         if (circle.next_line) circle.next_line.updateLine();
         if (circle.prev_line) circle.prev_line.updateLine();
         if (circle.shared_uncertainty_lines) {
-            circle.shared_uncertainty_lines.forEach(line => line.updateLines());
+            circle.shared_uncertainty_lines.forEach(line => line.updateLine());
         }
     }
 

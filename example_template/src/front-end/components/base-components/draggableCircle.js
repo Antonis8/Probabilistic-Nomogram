@@ -202,12 +202,12 @@ export class DraggableCircle {
         
         // Update uncertainty lines if they exist
         if (this.uncertainty_line) {
-            this.uncertainty_line.updateLines();
+            this.uncertainty_line.updateLine();
         }
         
         if (this.shared_uncertainty_lines) {
             this.shared_uncertainty_lines.forEach(uncertaintyLine => {
-                uncertaintyLine.updateLines();
+                uncertaintyLine.updateLine();
             });
         }
     }
@@ -282,11 +282,11 @@ export class DraggableCircle {
         // Update lines if they exist
         if (this.next_line) this.next_line.updateLine();
         if (this.prev_line) this.prev_line.updateLine();
-        if (this.uncertainty_line) this.uncertainty_line.updateLines();
+        if (this.uncertainty_line) this.uncertainty_line.updateLine();
         
         if (this.shared_uncertainty_lines) {
             this.shared_uncertainty_lines.forEach(uncertaintyLine => {
-                uncertaintyLine.updateLines();
+                uncertaintyLine.updateLine();
             });
         }
             
