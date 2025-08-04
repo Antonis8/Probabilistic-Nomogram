@@ -222,26 +222,15 @@ export class DraggableCircle {
     // Ineractivity methods
     attachEventListeners() {
         this.circle.addEventListener("mousedown", (event) => this.onMouseDown(event));
-        this.circle.addEventListener("touchstart", (event) => this.onTouchStart(event));
         this.circle.addEventListener("dragstart", (event) => event.preventDefault());
     }
 
-    onTouchStart(event) {
-        event.preventDefault(); // Prevent scrolling and other default behaviors
-        const touch = event.touches[0];
-        this.startDrag(touch.clientX, touch.clientY, true);
-    }
-
     onMouseDown(event) {
-        this.startDrag(event.clientX, event.clientY, false);
-    }
-
-    startDrag(clientX, clientY, isTouch) {
         this.isDragging = true;
         this.circle.style.cursor = "grabbing";
 
-        const shiftY = clientY - this.circle.getBoundingClientRect().top;
-        const shiftX = clientX - this.circle.getBoundingClientRect().left;
+        const shiftY = event.clientY - this.circle.getBoundingClientRect().top;
+        const shiftX = event.clientX - this.circle.getBoundingClientRect().left;
 
 
 
@@ -317,43 +306,15 @@ export class DraggableCircle {
             }
         };
 
-        const onTouchMove = (event) => {
-            if (this.isDragging) {
-                event.preventDefault(); // Prevent scrolling
-                const touch = event.touches[0];
-                moveAt(touch.pageX, touch.pageY);
-            }
-        };
-
         const onMouseUp = () => {
             this.isDragging = false;
             this.circle.style.cursor = "grab";
             document.removeEventListener("mousemove", onMouseMove);
             document.removeEventListener("mouseup", onMouseUp);
-            if (isTouch) {
-                document.removeEventListener("touchmove", onTouchMove);
-                document.removeEventListener("touchend", onTouchEnd);
-            }
         };
 
-        const onTouchEnd = () => {
-            this.isDragging = false;
-            this.circle.style.cursor = "grab";
-            document.removeEventListener("touchmove", onTouchMove);
-            document.removeEventListener("touchend", onTouchEnd);
-            if (!isTouch) {
-                document.removeEventListener("mousemove", onMouseMove);
-                document.removeEventListener("mouseup", onMouseUp);
-            }
-        };
-
-        if (isTouch) {
-            document.addEventListener("touchmove", onTouchMove, { passive: false });
-            document.addEventListener("touchend", onTouchEnd, { once: true });
-        } else {
-            document.addEventListener("mousemove", onMouseMove);
-            document.addEventListener("mouseup", onMouseUp, { once: true });
-        }
+        document.addEventListener("mousemove", onMouseMove);
+        document.addEventListener("mouseup", onMouseUp, { once: true });
     }
 
 

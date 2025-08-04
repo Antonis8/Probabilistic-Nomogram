@@ -5,8 +5,12 @@ import xml.etree.ElementTree as ET
 from add import main as generateNomogram
 from multiply import main as generateMultiplyNomogram
 
+from sample_nomograms.fuel import main as generateFuelNomogram
 
-tree = ET.parse('src/animation/multiply.svg')
+nomo_path_multiply = 'src/back-end/multiply.svg'
+nomo_path_fuel = 'fuel_nomo.svg'
+
+tree = ET.parse(nomo_path_fuel)
 root = tree.getroot()
 namespace = {'svg': 'http://www.w3.org/2000/svg'}
 MULTIPLICATION_NOMO_SCALING_FACTOR = 1.3227
@@ -92,7 +96,7 @@ def readJSON(filepath = "tick_list.json"):
             existing_data = json.load(file)
             print("JSON read!")
         except json.JSONDecodeError:
-            print("Json file likely just empty")
+            print("Json file lik.pely just empty")
     #breakpoint()
     return existing_data
 
@@ -130,8 +134,9 @@ def map_axis_to_ticklist():
     TICK_LEVELS = 3
     N_AXIS = 3
     cleanseJSON()
-    generateMultiplyNomogram()
+    #generateMultiplyNomogram()
     #generateNomogram()
+    generateFuelNomogram()
     return getTickCoords(N_AXIS, TICK_LEVELS, data = readJSON())
 
 

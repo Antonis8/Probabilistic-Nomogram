@@ -49,3 +49,8 @@ main_params = {
 }
 Nomographer(main_params)
 
+def main():
+    """Main function to generate fuel nomogram"""
+    Nomographer(main_params)
+    print("Fuel nomogram generated successfully!")
+    return True
