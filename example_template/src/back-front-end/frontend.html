@@ -1,10 +1,228 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Touch Tracker</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nomogram Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f1eeeb;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .button-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        button {
+            padding: 15px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .nomogram-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .nomogram-btn:hover {
+            background-color: #45a049;
+        }
+        
+        .custom-input {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        input[type="text"] {
+            padding: 10px;
+            font-size: 14px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            width: 200px;
+        }
+        
+        .custom-btn {
+            background-color: #2196F3;
+            color: white;
+            padding: 10px 20px;
+        }
+        
+        .custom-btn:hover {
+            background-color: #1976D2;
+        }
+        
+        .loading {
+            display: none;
+            margin-top: 20px;
+            font-style: italic;
+            color: #666;
+        }
+        
+        .loading.show {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Touch anywhere to track coordinates!</h1>
-    <script src="testing_touch.js"></script>
+    <div class="container">
+        <h1>Nomogram Generator</h1>
+        
+        <div class="button-grid">
+            <button class="nomogram-btn" onclick="generateNomogram('add')">
+                Addition Nomogram
+            </button>
+            
+            <button class="nomogram-btn" onclick="generateNomogram('multiply')">
+                Multiplication Nomogram
+            </button>
+            
+            <button class="nomogram-btn" onclick="generateNomogram('fuel')">
+                Fuel Economy Nomogram
+            </button>
+            
+            <div class="custom-input">
+                <input type="text" id="customInput" placeholder="Enter nomogram name...">
+                <button class="custom-btn" onclick="generateCustomNomogram()">
+                    Generate Custom
+                </button>
+            </div>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <div>Generating nomogram... Please wait.</div>
+        </div>
+        
+        <div class="error" id="error"></div>
+    </div>
+
+    <script>
+        // Wait for pywebview to be ready
+        window.addEventListener('pywebviewready', function() {
+            console.log('pywebview is ready');
+        });
+
+        async function generateNomogram(type) {
+            showLoading(true);
+            clearError();
+            
+            try {
+                // Wait a bit for pywebview to be fully loaded
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                if (typeof pywebview !== 'undefined' && pywebview.api && pywebview.api.generateNomogram) {
+                    const result = await pywebview.api.generateNomogram(type);
+                    if (result.success) {
+                        // Hide this interface and load the nomogram viewer from live server
+                        document.body.innerHTML = '<iframe src="http://127.0.0.1:5500/example_template/src/front-end/main/index.html" style="width:100%; height:100vh; border:none;"></iframe>';
+                    } else {
+                        showError(result.error);
+                        showLoading(false);
+                    }
+                } else {
+                    // More detailed error for debugging
+                    let errorMsg = 'pywebview API not available. ';
+                    if (typeof pywebview === 'undefined') {
+                        errorMsg += 'pywebview object not found.';
+                    } else if (!pywebview.api) {
+                        errorMsg += 'pywebview.api not found.';
+                    } else if (!pywebview.api.generateNomogram) {
+                        errorMsg += 'generateNomogram method not found.';
+                    }
+                    showError(errorMsg);
+                    showLoading(false);
+                }
+            } catch (error) {
+                showError('Failed to generate nomogram: ' + error.message);
+                showLoading(false);
+            }
+        }
+        
+        async function generateCustomNomogram() {
+            const input = document.getElementById('customInput');
+            const nomogramName = input.value.trim();
+            
+            if (!nomogramName) {
+                showError('Please enter a nomogram name');
+                return;
+            }
+            
+            await generateNomogram(nomogramName);
+            input.value = '';
+        }
+        
+        function showLoading(show) {
+            const loadingDiv = document.getElementById('loading');
+            if (show) {
+                loadingDiv.classList.add('show');
+            } else {
+                loadingDiv.classList.remove('show');
+            }
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+        }
+        
+        function clearError() {
+            document.getElementById('error').textContent = '';
+        }
+        
+        // Enter key support for custom input
+        document.getElementById('customInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                generateCustomNomogram();
+            }
+        });
+    </script>
 </body>
 </html>
