@@ -55,7 +55,7 @@ def start_local_server():
         project_root = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")
         os.chdir(project_root)
         
-        PORT = 5500
+        PORT = 5600 # random port to avoid conflicts with Live Server
         Handler = http.server.SimpleHTTPRequestHandler
         
         with socketserver.TCPServer(("", PORT), Handler) as httpd:

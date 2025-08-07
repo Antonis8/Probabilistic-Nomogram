@@ -226,6 +226,7 @@ def main():
     nomogram_name = sys.argv[1] if len(sys.argv) > 1 else "fuel"
     
     try:
+        delete_redundant_json() # Clean up in case user double clicks and messes up the threading
         nomogram_func = load_nomogram_function(nomogram_name)
         nomogram_func()
         map_axis_to_coordinate_value_pairs()
