@@ -82,7 +82,7 @@ export class UncertaintySlider {
     }
     
     updateLabel() {
-        this.label.textContent = `σ=${this.currentStd.toFixed(1)}`;
+        this.label.textContent = `std=${this.currentStd.toFixed(1)}`;
     }
     
     attachEventListeners() {
