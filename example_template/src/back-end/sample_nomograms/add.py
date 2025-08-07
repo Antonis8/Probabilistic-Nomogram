@@ -46,7 +46,7 @@ def main():
     }
 
     main_params = {
-        'filename': 'add.svg',
+        'filename': 'svgs/add.svg',
         'paper_height': 10.0,
         'paper_width': 10.0,
         'block_params': [block_1_params],
@@ -55,12 +55,8 @@ def main():
         'debug': False,
         'svg_file': True,
     }
-    cleanseJSON()
+
     Nomographer(main_params)
-    getTickCoords(VAR_LEVELS, TICK_LEVELS, data = readJSON())
-
-
-
 
 if __name__ == "__main__":
     main()

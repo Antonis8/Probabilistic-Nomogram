@@ -2,13 +2,18 @@ import heapq
 import json
 from pprint import *
 import xml.etree.ElementTree as ET
+import os
+
+# Get the absolute path of the directory where the script is located
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
 from add import main as generateNomogram
 from multiply import main as generateMultiplyNomogram
 
 from sample_nomograms.fuel import main as generateFuelNomogram
 
-nomo_path_multiply = 'src/back-end/multiply.svg'
-nomo_path_fuel = 'fuel_nomo.svg'
+nomo_path_multiply = 'src/back-end/svgs/multiply.svg'
+nomo_path_fuel = 'svgs/fuel_nomo.svg'
 
 tree = ET.parse(nomo_path_fuel)
 root = tree.getroot()
@@ -34,8 +39,6 @@ def trim_svg_keep_axis():
         viewBox = [float(val) for val in viewBox_attr.split()][:2]
     else:
         viewBox = None
-    
-    print("ViewBox: " + str(viewBox))
 
     return {"paths": paths, "viewBox": viewBox}
 
@@ -53,8 +56,8 @@ def trim_linetos(axis = 0):
     moves = []
     for path in MLpairs:
         move_xy= path.split("L")[0].split()
-        #print("PATH: " + str(move_xy))
-        
+
+
         new_x= (float(move_xy[0]) - x_offset)
         scaled_x =round( new_x * MULTIPLICATION_NOMO_SCALING_FACTOR ,decimals)
 
@@ -78,36 +81,33 @@ def map_axis_to_coordinates(axis_count= 3):
     for axis in range(axis_count):
         axis_name = "Axis " + str(axis+1)
         axis_to_coords[axis_name] = trim_linetos(axis)
-        print("Number of ticks for Axis " + str(axis) + ": " + str(len(trim_linetos(axis))))
-
-    pprint(axis_to_coords)
-
     return axis_to_coords
 
-# tick list
-def cleanseJSON(filepath = "tick_list.json"):
-    with open(filepath, 'w') as file:
-            print("Cleansing json file")
-            json.dump([], file)
-
-def readJSON(filepath = "tick_list.json"):
+# get tick list
+def readJSON(filename="tick_list.json"):
+    filepath = os.path.join(SCRIPT_DIR, filename)
     with open(filepath, 'r') as file:
         try:
             existing_data = json.load(file)
-            print("JSON read!")
+            #print(f"JSON read from {filepath}!")
         except json.JSONDecodeError:
-            print("Json file lik.pely just empty")
-    #breakpoint()
+            print("Json file likely just empty")
+            existing_data = []
     return existing_data
 
-def getTickCoords(VAR_LEVELS = 3, TICK_LEVELS = 2, data = readJSON()):
+def delete_redundant_json(filename="tick_list.json"):
+    filepath = os.path.join(SCRIPT_DIR, filename)
+    if os.path.exists(filepath):
+        os.remove(filepath)
+    else:
+        print(f"JSON file at {filepath} does not exist.")
 
+def getTickCoords(VAR_LEVELS = 3, TICK_LEVELS = 2, data = None):
     Axis_ticks = {}
     for i in range(VAR_LEVELS):
 
         start_idx= i*TICK_LEVELS
         end_idx = start_idx + TICK_LEVELS
-        #print("Start" + str(start_idx) + ", End:" + str(end_idx))
         if i==1:
             sorted_axis_ticks= merge_n_sorted_lists(data[start_idx:end_idx])[::-1]
         else:
@@ -115,13 +115,8 @@ def getTickCoords(VAR_LEVELS = 3, TICK_LEVELS = 2, data = readJSON()):
 
         axis_name= "Axis " + str(i+1)
         Axis_ticks[axis_name] = sorted_axis_ticks
-
-    pprint(Axis_ticks)
-    for axis in Axis_ticks:
-        print(len(Axis_ticks[axis]))
     
     return(Axis_ticks)
-
 
 def merge_n_sorted_lists(lists):
     """
@@ -133,10 +128,10 @@ def merge_n_sorted_lists(lists):
 def map_axis_to_ticklist():
     TICK_LEVELS = 3
     N_AXIS = 3
-    cleanseJSON()
+
     #generateMultiplyNomogram()
     #generateNomogram()
-    generateFuelNomogram()
+    
     return getTickCoords(N_AXIS, TICK_LEVELS, data = readJSON())
 
 
@@ -198,28 +193,23 @@ def map_axis_to_coordinate_value_pairs():
             "points": coords_to_values,
             "scale": scale,
         }
-    
-    pprint(axis_to_coord_values)
     return (axis_to_coord_values)
 
 def save_to_json():
     axis_to_coord_values = map_axis_to_coordinate_value_pairs()
     
-    # Convert tuple keys to strings
-    # serializable_dict = {
-    #     axis: {str(coords[0]) + str(coords[1]): str(value) for coords, value in coord_values.items()}
-    #     for axis, coord_values in axis_to_coord_values.items()
-    # }
-    
     serializable_dict = axis_to_coord_values
-    # Write the dictionary to a JSON file
-    with open("axis_to_coord_values.json", "w") as json_file:
+    # Write the dictionary to a JSON file in the same directory as the script
+    filepath = os.path.join(SCRIPT_DIR, "axis_to_coord_values.json")
+    with open(filepath, "w") as json_file:
         json.dump(serializable_dict, json_file)
-    print("Dictionary written to axis_to_coord_values.json")
+    print(f"Dictionary written to {filepath}")
 
 def main():     
+    generateFuelNomogram()
     map_axis_to_coordinate_value_pairs()
     save_to_json()
+    delete_redundant_json()
 
 
 main()    

@@ -39,7 +39,7 @@ block_SI = {
 }
 
 main_params = {
-    'filename': 'fuel_nomo.svg',
+    'filename': 'svgs/fuel_nomo.svg',
     'paper_height':15.0,
     'paper_width':15.0,
     'block_params': [block_SI],
@@ -47,7 +47,6 @@ main_params = {
     'title_str': r'\LARGE Fuel economy calculator',
     'svg_file': True,
 }
-Nomographer(main_params)
 
 def main():
     """Main function to generate fuel nomogram"""
