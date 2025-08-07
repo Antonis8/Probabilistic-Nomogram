@@ -1,8 +1,8 @@
-# Nomogram artifacts
-*.pdf
-*.svg
-*.json
-tick_list.json
+# # Nomogram artifacts
+# *.pdf
+# *.svg
+# *.json
+# tick_list.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
