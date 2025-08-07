@@ -80,9 +80,9 @@ time.sleep(1)
 # Create and launch the webview
 api = API()
 
-# Get the absolute path to frontend.html
+# Get the absolute path to index.html
 script_dir = os.path.dirname(os.path.abspath(__file__))
-frontend_path = os.path.join(script_dir, "frontend.html")
+frontend_path = os.path.join(script_dir, "index.html")
 
 window = webview.create_window(
     "Nomogram Generator", 
