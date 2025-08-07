@@ -87,6 +87,7 @@ export class UncertaintySlider {
     
     attachEventListeners() {
         this.handle.addEventListener("mousedown", (event) => this.onMouseDown(event));
+        this.handle.addEventListener("touchstart", (event) => this.onTouchStart(event));
         
         // Add hover effects
         this.handle.addEventListener("mouseenter", () => {
@@ -100,20 +101,35 @@ export class UncertaintySlider {
         });
     }
     
+    onTouchStart(event) {
+        event.preventDefault(); // Prevent scrolling and other default behaviors
+        const touch = event.touches[0];
+        this.startDrag(touch.clientY, true);
+    }
+
     onMouseDown(event) {
         event.preventDefault();
+        this.startDrag(event.clientY, false);
+    }
+
+    startDrag(clientY, isTouch) {
         this.handle.style.cursor = "grabbing";
         this.handle.style.transform = "scale(0.95)";
-        
-        const onMouseMove = (event) => {
+
+        const onMove = (event) => {
+            const currentY = isTouch ? event.touches[0].clientY : event.clientY;
+            
+            if (isTouch) {
+                event.preventDefault(); // Prevent scrolling
+            }
+            
             // Calculate new position relative to track
             const trackRect = this.track.getBoundingClientRect();
-            const mouseY = event.clientY;
             const trackTop = trackRect.top;
             const trackHeight = 80;
             
             // Constrain to track bounds
-            let relativeY = mouseY - trackTop;
+            let relativeY = currentY - trackTop;
             relativeY = Math.max(0, Math.min(trackHeight, relativeY));
             
             // Map position to std value (inverted)
@@ -129,15 +145,26 @@ export class UncertaintySlider {
                 this.onStdChange(this.currentStd);
             }
         };
-        
-        const onMouseUp = () => {
+
+        const onEnd = () => {
             this.handle.style.cursor = "grab";
             this.handle.style.transform = "scale(1)";
-            document.removeEventListener("mousemove", onMouseMove);
-            document.removeEventListener("mouseup", onMouseUp);
+            
+            if (isTouch) {
+                document.removeEventListener("touchmove", onMove);
+                document.removeEventListener("touchend", onEnd);
+            } else {
+                document.removeEventListener("mousemove", onMove);
+                document.removeEventListener("mouseup", onEnd);
+            }
         };
-        
-        document.addEventListener("mousemove", onMouseMove);
-        document.addEventListener("mouseup", onMouseUp);
+
+        if (isTouch) {
+            document.addEventListener("touchmove", onMove, { passive: false });
+            document.addEventListener("touchend", onEnd, { once: true });
+        } else {
+            document.addEventListener("mousemove", onMove);
+            document.addEventListener("mouseup", onEnd, { once: true });
+        }
     }
 }
