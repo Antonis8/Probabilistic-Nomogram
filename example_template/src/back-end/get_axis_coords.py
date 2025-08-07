@@ -7,21 +7,23 @@ import os
 # Get the absolute path of the directory where the script is located
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
-from add import main as generateNomogram
-from multiply import main as generateMultiplyNomogram
-
+from sample_nomograms.add import main as generateAdditionNomogram
+from sample_nomograms.multiply import main as generateMultiplyNomogram
 from sample_nomograms.fuel import main as generateFuelNomogram
 
-nomo_path_multiply = 'src/back-end/svgs/multiply.svg'
-nomo_path_fuel = 'svgs/fuel_nomo.svg'
 
-tree = ET.parse(nomo_path_fuel)
-root = tree.getroot()
-namespace = {'svg': 'http://www.w3.org/2000/svg'}
+svg_filename = 'nomogram.svg'
+
+
 MULTIPLICATION_NOMO_SCALING_FACTOR = 1.3227
+namespace = {'svg': 'http://www.w3.org/2000/svg'}
+
 
 def trim_svg_keep_axis():
     # output:  one string of chained command paths
+    tree = ET.parse(svg_filename)
+    root = tree.getroot()
+
 
     # Find all <g> elements with stroke-linecap="butt"
     paths = []
@@ -76,7 +78,6 @@ def sortMoves(moves):
 def map_axis_to_coordinates(axis_count= 3):
     # input: N of axis
     # output: dict mapping axis to list of coordinates
-    
     axis_to_coords= {}
     for axis in range(axis_count):
         axis_name = "Axis " + str(axis+1)
@@ -128,10 +129,6 @@ def merge_n_sorted_lists(lists):
 def map_axis_to_ticklist():
     TICK_LEVELS = 3
     N_AXIS = 3
-
-    #generateMultiplyNomogram()
-    #generateNomogram()
-    
     return getTickCoords(N_AXIS, TICK_LEVELS, data = readJSON())
 
 
@@ -200,13 +197,19 @@ def save_to_json():
     
     serializable_dict = axis_to_coord_values
     # Write the dictionary to a JSON file in the same directory as the script
-    filepath = os.path.join(SCRIPT_DIR, "axis_to_coord_values.json")
+    frontend_main_dir = os.path.join(SCRIPT_DIR, "..", "front-end", "main")
+    frontend_main_dir = os.path.normpath(frontend_main_dir)  # Clean up the path
+    filepath = os.path.join(frontend_main_dir, "axis_to_coord_values.json")
+    
     with open(filepath, "w") as json_file:
         json.dump(serializable_dict, json_file)
     print(f"Dictionary written to {filepath}")
 
-def main():     
-    generateFuelNomogram()
+def main():
+    # different_nomograms = [generateAdditionNomogram(), 
+    #                        generateMultiplyNomogram(),
+    #                        generateFuelNomogram()]
+    generateAdditionNomogram()
     map_axis_to_coordinate_value_pairs()
     save_to_json()
     delete_redundant_json()

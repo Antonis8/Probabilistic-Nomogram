@@ -1,8 +1,4 @@
-import pprint
 from pynomo.nomographer import Nomographer
-import heapq
-import json
-import numpy as np
 
 def main():
     TICK_LEVELS = 3
@@ -42,11 +38,10 @@ def main():
         'f1_params': N_params_1,
         'f2_params': N_params_2,
         'f3_params': N_params_3,
-        'isopleth_values': [[6, 2, 'x']],
     }
 
     main_params = {
-        'filename': 'svgs/add.svg',
+        'filename': 'nomogram.svg',
         'paper_height': 10.0,
         'paper_width': 10.0,
         'block_params': [block_1_params],

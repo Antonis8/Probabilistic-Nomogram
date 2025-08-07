@@ -37,7 +37,7 @@ def main():
      }
 
      # Define the main parameters
-     main_params = {'filename': 'svgs/multiply.svg', 'paper_height':15.0,
+     main_params = {'filename': 'nomogram.svg', 'paper_height':15.0,
      'paper_width':15.0,'block_params': [block_SI],
      'title_str': r'\LARGE A = BxC',
      'svg_file': True,

@@ -1,4 +1,4 @@
-from pynomo.nomographer import *
+from pynomo.nomographer import Nomographer
 
 dist_SI = {
     # distance in kilometers (u1)
@@ -39,7 +39,7 @@ block_SI = {
 }
 
 main_params = {
-    'filename': 'svgs/fuel_nomo.svg',
+    'filename': 'nomogram.svg',
     'paper_height':15.0,
     'paper_width':15.0,
     'block_params': [block_SI],
