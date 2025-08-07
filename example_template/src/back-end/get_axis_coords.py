@@ -3,6 +3,8 @@ import json
 from pprint import *
 import xml.etree.ElementTree as ET
 import os
+import sys
+import importlib.util
 
 # Get the absolute path of the directory where the script is located
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -192,6 +194,21 @@ def map_axis_to_coordinate_value_pairs():
         }
     return (axis_to_coord_values)
 
+def load_nomogram_function(nomogram_name):
+    module_path = os.path.join(SCRIPT_DIR, "sample_nomograms", f"{nomogram_name}.py")
+    
+    if not os.path.exists(module_path):
+        raise FileNotFoundError(f"'{nomogram_name}.py' not found")
+    
+    spec = importlib.util.spec_from_file_location(nomogram_name, module_path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    
+    if not hasattr(module, 'main'):
+        raise AttributeError(f"'{nomogram_name}.py' has no main function")
+    
+    return module.main
+
 def save_to_json():
     axis_to_coord_values = map_axis_to_coordinate_value_pairs()
     
@@ -206,13 +223,21 @@ def save_to_json():
     print(f"Dictionary written to {filepath}")
 
 def main():
-    # different_nomograms = [generateAdditionNomogram(), 
-    #                        generateMultiplyNomogram(),
-    #                        generateFuelNomogram()]
-    generateAdditionNomogram()
-    map_axis_to_coordinate_value_pairs()
-    save_to_json()
-    delete_redundant_json()
+    nomogram_name = sys.argv[1] if len(sys.argv) > 1 else "fuel"
+    
+    try:
+        nomogram_func = load_nomogram_function(nomogram_name)
+        nomogram_func()
+        map_axis_to_coordinate_value_pairs()
+        save_to_json()
+        delete_redundant_json()
+        
+    except (FileNotFoundError):
+        print(f"Error: 'Tried to use {nomogram_name}.py', but it was not found in /sample_nomograms. Defaults: 'add', 'multiply' or 'fuel'")
+        sys.exit(1)
+    except ( AttributeError) as e:
+        print(f"Error: {e}")
+        sys.exit(1)
 
-
-main()    
+if __name__ == "__main__":
+    main()    
