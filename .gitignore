@@ -1,7 +1,7 @@
 # # Nomogram artifacts
 # *.pdf
-# *.svg
-# *.json
+*.svg
+*.json
 # tick_list.json
 
 # Byte-compiled / optimized / DLL files
