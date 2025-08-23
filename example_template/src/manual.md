@@ -1,9 +1,18 @@
-# User manual 
+# User Manual
 
-Once you have launched src/front-end/main/index.html as Live server in VS Code, you'll be able to run the pybwebview app with
+## Quick Demo
+Try it instantly: https://antonis8.github.io/Probabilistic-Nomogram/example_template/src/front-end/main/
 
-The circles on each axis are draggable, and will update the isopleth. The two most recently used circles act as the inputs.
+*No installation needed.*
 
-The uncetainty sliders below each axis are used to increase the range from which the uncertainty circles and lines are generated. It spreads or concentrates the noise.
+## How to Use
 
-The uncertainty noise can be turned off at any time with the button on the right. 
+### Basic Controls
+- **Drag circles** on any axis to set values
+- **Isopleth updates** automatically to show results
+- **Last two moved circles** act as inputs
+
+### Uncertainty Features
+- **Sliders below axes**: Adjust uncertainty spread
+- **Toggle button (right)**: Turn uncertainty on/off
+- **Uncertainty circles/lines**: Show how input noise affects results

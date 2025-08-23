@@ -1,20 +1,51 @@
-# Readme
+# Probabilistic Nomogram Generator
 
-Under src you will find the 3 main folders. "Back-end" is responsible for nomogram generation and axes coordinate-value pair collection. "nomogram-generation-front-end" holds the pywebview code sitting on top of this. "front-end" contains all the JS code for generating and handling the probabilistic nomogram. 
+## Project Structure
 
-## Build instructions
+Under `example_template/src` you will find the 3 main folders:
 
-1. Install requirements (follow requirements section)
+- **`back-end`** - Responsible for nomogram generation and axes coordinate-value pair collection
+- **`nomogram-generation-front-end`** - Contains the PyWebView app that adds a layer over the back-end, and routes to the interactive front-end. 
+- **`front-end`** - Contains all JavaScript components for generating and handling the probabilistic nomogram
 
-2. Modify one PyNomo function 
+## Requirements
 
-## PyNomo Modification Instructions
+### Prerequisites
+- Python 3.7+
+- VS Code (or IDE capable of running HTML files as a live server)
+- Tested on Windows 10
 
+### PyNomo installation
+Please follow the official guide on https://lefakkomies.github.io/pynomo-doc/installation/installation.html
 
-### 1. Add Function to `pynomo/nomo_axis.py`
+If you have issues with Tex installation, follow the section below.
 
-Please include this function in `pynomo/nomo_axis.py`:
+### TeX Installation
+**NOTE:** TeX is required for PyNomo, but standard installation can take 24+ hours.
 
+**Recommended approach:**
+1. Download nearest CTAN ISO image. For UK: https://mirror.ox.ac.uk/sites/ctan.org/
+2. Navigate to: `systems/texlive/Images/`
+3. Download `texlive2024.iso` (or latest version)
+4. Mount the ISO file (Windows 10+ right-click → Mount)
+5. Run `install-tl-windows.bat` from mounted drive
+
+### Python Dependencies
+Install packages listed in `requirements.txt`:
+
+```bash
+pip install -r requirements.txt
+```
+
+## Setup Instructions
+
+### 1. Install Requirements
+Follow the Requirements section above and activate your virtual environment.
+
+### 2. PyNomo Modification
+**Required:** Modify PyNomo to export tick data for the probabilistic system. Locate the pynomo folder in your virtual environment. 
+
+#### Add Function to `pynomo/nomo_axis.py`
 ```python
 def _write_tick_list_to_json(self, tick_list):
     import os
@@ -41,58 +72,57 @@ def _write_tick_list_to_json(self, tick_list):
         json.dump(existing_data, file)
 ```
 
-### 2. Modify `_make_tick_lines()` Function
-
-Additionally, insert the following line of code at **line 987**, at the end of the function `_make_tick_lines()`:
-
+#### Modify `_make_tick_lines()` Function
+Insert this line at **line 987**, at the end of the `_make_tick_lines()` function:
 ```python
 self._write_tick_list_to_json(tick_list)
 ```
 
-## Why?
-These modifications will enable the PyNomo library to export tick list data to a JSON file for use with the backend system.
+## Usage
+Ensure your virtual environment is activated. 
 
+### Option 1: Interactive Mode (Recommended)
+```bash
+cd example_template/src/nomogram-generation-front-end
+python main.py
+```
 
+Choose from 3 pre-selected nomograms or add custom ones to `src/back-end/sample_nomograms/` following the existing format.
 
-### Requirements
+**Limitations:** 3 axes with straight lines only.
 
-List the all of the pre-requisites software required to set up your project (e.g. compilers, packages, libraries, OS, hardware)
+### Option 2: Manual Mode (If Interactive Fails)
+If port issues occur, run backend and frontend separately:
 
-For example:
+#### Run Backend
+```bash
+cd example_template/src/back-end
 
-* Python 3.7
-* Packages: listed in `requirements.txt` 
-* Tested on Windows 10
+```
+```bash
+python get_axis_coords.py fuel
+```
+Available nomograms: `fuel`, `multiply`, `add`, or custom ones in `sample_nomograms/`
 
+#### Run Frontend
+```bash
+cd src/front-end/main/
+```
 
-1. Tex (Pynomo requirement)
-    
-Installing Tex can take very very long with a live installation (>24h)
+Right-click `index.html` → "Open with Live Server" (VS Code)
 
-Instead download your nearest CTAN image via ISO. For UK:
-https://mirror.ox.ac.uk/sites/ctan.org/
+**Note:** Live server is necessary for proper functionality.
 
-Steps:
+## Adding Custom Nomograms
+1. Create new `.py` file in `back-end/sample_nomograms/`
+2. Follow existing format (see `fuel.py`, `multiply.py`, `add.py`)
+3. Ensure exactly 3 axes with straight lines
+4. Reference by filename when running backend
 
-1. In the CTAN mirror directory, go to: "systems/texlive/Images/"
-
-2. Download a file named something like texlive2024.iso
-
-3. After downloading, mount the ISO file on Windows by right-clicking it and selecting Mount (Windows 10+ has this feature built-in).
-If you're on an older version of Windows, you may need a third-party tool like WinCDEmu to mount the ISO.
-
-4. Open the mounted ISO and run "install-tl-windows.bat" to start the installation.
-
-### Build steps
-
-
-
-### Test steps
-
-List steps needed to show your software works. This might be running a test suite, or just starting the program; but something that could be used to verify your code is working correctly.
-
-Examples:
-
-* Run automated tests by running `pytest`
-* Start the software by running `bin/editor.exe` and opening the file `examples/example_01.bin`
-
+## Troubleshooting
+- Ensure virtual environment is activated
+- Verify TeX installation if PyNomo fails
+- Check port availability for PyWebView
+- Use live server for frontend (static files may not work)
+- If everything fails for whatever reason, the probabilistic nomogram of the front-end is hosted on https://antonis8.github.io/Probabilistic-Nomogram/example_template/src/front-end/main/.
+- This was used for evaluation and will remain live. 
