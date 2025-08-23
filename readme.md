@@ -1,5 +1,11 @@
 # Probabilistic Nomogram Generator
 
+## Quick Demo
+Try it instantly: https://antonis8.github.io/Probabilistic-Nomogram/example_template/src/front-end/main/
+
+*No installation needed.*
+
+
 ## Project Structure
 
 Under `example_template/src` you will find the 3 main folders:
