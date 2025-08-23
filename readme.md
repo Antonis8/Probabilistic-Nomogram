@@ -1,10 +1,9 @@
 # Probabilistic Nomogram Generator
 
 ## Quick Demo
-Try it instantly: https://antonis8.github.io/Probabilistic-Nomogram/example_template/src/front-end/main/
+Try it instantly: [Live Demo](https://antonis8.github.io/Probabilistic-Nomogram/example_template/src/front-end/main/)
 
 *No installation needed.*
-
 
 ## Project Structure
 
@@ -22,7 +21,7 @@ Under `example_template/src` you will find the 3 main folders:
 - Tested on Windows 10
 
 ### PyNomo installation
-Please follow the official guide on https://lefakkomies.github.io/pynomo-doc/installation/installation.html
+Please follow the official guide on the [PyNomo installation page](https://lefakkomies.github.io/pynomo-doc/installation/installation.html)
 
 If you have issues with Tex installation, follow the section below.
 
@@ -30,7 +29,7 @@ If you have issues with Tex installation, follow the section below.
 **NOTE:** TeX is required for PyNomo, but standard installation can take 24+ hours.
 
 **Recommended approach:**
-1. Download nearest CTAN ISO image. For UK: https://mirror.ox.ac.uk/sites/ctan.org/
+1. Download nearest CTAN ISO image. For UK: [CTAN Mirror](https://mirror.ox.ac.uk/sites/ctan.org/)
 2. Navigate to: `systems/texlive/Images/`
 3. Download `texlive2024.iso` (or latest version)
 4. Mount the ISO file (Windows 10+ right-click → Mount)
@@ -103,7 +102,6 @@ If port issues occur, run backend and frontend separately:
 #### Run Backend
 ```bash
 cd example_template/src/back-end
-
 ```
 ```bash
 python get_axis_coords.py fuel
@@ -130,6 +128,6 @@ Right-click `index.html` → "Open with Live Server" (VS Code)
 - Verify TeX installation if PyNomo fails
 - Check port availability for PyWebView
 - Use live server for frontend (static files may not work)
-- If everything fails for whatever reason, the probabilistic nomogram of the front-end is hosted on https://antonis8.github.io/Probabilistic-Nomogram/example_template/src/front-end/main/.
-- This was used for evaluation and will remain live. 
-- If the front-end runs fine but some lines get cut out, decrease your browser zoom level. 
+- If everything fails for whatever reason, the probabilistic nomogram is available at the [Live Demo](https://antonis8.github.io/Probabilistic-Nomogram/example_template/src/front-end/main/)
+- This was used for evaluation and will remain live
+- If the front-end runs fine but some lines get cut out, decrease your browser zoom level

@@ -1,7 +1,7 @@
 # User Manual
 
 ## Quick Demo
-Try it instantly: https://antonis8.github.io/Probabilistic-Nomogram/example_template/src/front-end/main/
+Try it instantly: [Live Demo](https://antonis8.github.io/Probabilistic-Nomogram/example_template/src/front-end/main/)
 
 *No installation needed.*
 
@@ -18,4 +18,4 @@ Try it instantly: https://antonis8.github.io/Probabilistic-Nomogram/example_temp
 - **Uncertainty circles/lines**: Show how input noise affects results
 
 ### Troubleshooting:
-If lines get cut out, just decrease your browser zoom level. 
+If lines get cut out, just decrease your browser zoom level.
