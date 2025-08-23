@@ -132,3 +132,4 @@ Right-click `index.html` → "Open with Live Server" (VS Code)
 - Use live server for frontend (static files may not work)
 - If everything fails for whatever reason, the probabilistic nomogram of the front-end is hosted on https://antonis8.github.io/Probabilistic-Nomogram/example_template/src/front-end/main/.
 - This was used for evaluation and will remain live. 
+- If the front-end runs fine but some lines get cut out, decrease your browser zoom level. 

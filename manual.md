@@ -16,3 +16,6 @@ Try it instantly: https://antonis8.github.io/Probabilistic-Nomogram/example_temp
 - **Sliders below axes**: Adjust uncertainty spread
 - **Toggle button (right)**: Turn uncertainty on/off
 - **Uncertainty circles/lines**: Show how input noise affects results
+
+### Troubleshooting:
+If lines get cut out, just decrease your browser zoom level. 
