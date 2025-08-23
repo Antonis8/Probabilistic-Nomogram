@@ -1,11 +1,58 @@
 # Readme
 
-Put a brief description of your code here. This should at least describe the file structure.
+Under src you will find the 3 main folders. "Back-end" is responsible for nomogram generation and axes coordinate-value pair collection. "nomogram-generation-front-end" holds the pywebview code sitting on top of this. "front-end" contains all the JS code for generating and handling the probabilistic nomogram. 
 
 ## Build instructions
 
-**You must** include the instructions necessary to build and deploy this project successfully. If appropriate, also include 
-instructions to run automated tests. 
+1. Install requirements (follow requirements section)
+
+2. Modify one PyNomo function 
+
+## PyNomo Modification Instructions
+
+
+### 1. Add Function to `pynomo/nomo_axis.py`
+
+Please include this function in `pynomo/nomo_axis.py`:
+
+```python
+def _write_tick_list_to_json(self, tick_list):
+    import os
+    import json
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    backend_dir = os.path.join(current_dir,'..', '..', '..', '..', '..', 'src', 'back-end')
+    backend_dir = os.path.normpath(backend_dir)
+    json_file_path = os.path.join(backend_dir, 'tick_list.json')
+
+    existing_data = []
+    try:
+        with open(json_file_path, 'r') as file:
+            existing_data = json.load(file)
+    except json.JSONDecodeError:
+        print("Json file likely just empty")
+    except FileNotFoundError:
+        #print("Json file not found, creating a new one.")
+        pass
+
+    existing_data.append(tick_list)
+
+    with open(json_file_path, 'w') as file:
+        #print(f"Writing to: {json_file_path}")
+        json.dump(existing_data, file)
+```
+
+### 2. Modify `_make_tick_lines()` Function
+
+Additionally, insert the following line of code at **line 987**, at the end of the function `_make_tick_lines()`:
+
+```python
+self._write_tick_list_to_json(tick_list)
+```
+
+## Why?
+These modifications will enable the PyNomo library to export tick list data to a JSON file for use with the backend system.
+
+
 
 ### Requirements
 
@@ -16,12 +63,6 @@ For example:
 * Python 3.7
 * Packages: listed in `requirements.txt` 
 * Tested on Windows 10
-
-or another example:
-
-* Requires Raspberry Pi 3 
-* a Linux host machine with the `arm-none-eabi` toolchain (at least version `x.xx`) installed
-* a working LuaJIT installation > 2.1.0
 
 
 1. Tex (Pynomo requirement)

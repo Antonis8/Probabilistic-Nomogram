@@ -38,5 +38,5 @@ As a nurse, I want to be able to view a generated nomogram, and GRAPHICALLY (cli
 As a patient, I want to be able to view the nomogram the nurse adjusted.
 
 ### Minimum Viable Product requirements:
-Above functonality but for a fixed monogram equation/ simple 2 variable equations (e.g. A = B+C). 
+Above functonality but for a fixed monogram equation/ simple 3 variable equations (e.g. A = B+C). 
 Support adjusting the distribution of one variable.

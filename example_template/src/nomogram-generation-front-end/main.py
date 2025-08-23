@@ -65,7 +65,7 @@ def start_local_server():
         print(f"Error starting server: {e}")
 
 # Check if port 5500 is already in use
-PORT = 5500
+PORT = 5600
 if is_port_in_use(PORT):
     print(f"Port {PORT} is already in use (likely Live Server). Using existing server.")
 else:
